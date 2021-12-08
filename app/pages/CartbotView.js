@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from "react";
 import {
   Text,
   View,
@@ -11,13 +11,13 @@ import {
   FlatList,
   Keyboard,
   Platform,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {NavigationActions, StackActions} from 'react-navigation';
-import Modal from 'react-native-modal';
-import Toast, {DURATION} from 'react-native-easy-toast';
+} from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { NavigationActions, StackActions } from "react-navigation";
+import Modal from "react-native-modal";
+import Toast, { DURATION } from "react-native-easy-toast";
 
-import generalStyles from '../constants/styles';
+import generalStyles from "../constants/styles";
 import {
   returnBackfromApprove,
   confirmationAprrove,
@@ -25,20 +25,21 @@ import {
   confirmationArchive,
   getConfirmationQuery,
   masterDetailesQuery,
-} from '../network/queries';
-import {CONFIRMATION_DEFAULT_FILTER} from '../constants/constants';
-import {Header, ListLoading} from '@components';
-import Colors from '../constants/colors';
-import images from '@assets/images';
-import {base64ToString} from '../utils';
-import {DescriptionModal, ToastView} from '@components';
-import {userStore} from '../stores';
+  announcementQuery,
+} from "../network/queries";
+import { CONFIRMATION_DEFAULT_FILTER } from "../constants/constants";
+import { Header, ListLoading } from "@components";
+import Colors from "../constants/colors";
+import images from "@assets/images";
+import { base64ToString } from "../utils";
+import { DescriptionModal, ToastView } from "@components";
+import { userStore } from "../stores";
 
-const {width, height} = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const cartbotGridViewRowStyles = StyleSheet.create({
   container: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     padding: 12,
     borderBottomWidth: 1,
     borderBottomColor: Colors.disabledTextColor,
@@ -47,10 +48,10 @@ const cartbotGridViewRowStyles = StyleSheet.create({
     color: Colors.textDarkColor,
     fontSize: 12,
   },
-  card: {color: Colors.headerBackgroundColor, fontSize: 12, marginEnd: 20},
+  card: { color: Colors.headerBackgroundColor, fontSize: 12, marginEnd: 20 },
 });
 
-const CartbotGridButton = ({text, type, onPress, source}) => (
+const CartbotGridButton = ({ text, type, onPress, source }) => (
   <TouchableOpacity style={cartbotGridButtonStyles.container} onPress={onPress}>
     <Text style={[generalStyles.englishText, cartbotGridButtonStyles.text]}>
       {text}
@@ -73,18 +74,18 @@ const CartbotGridButton = ({text, type, onPress, source}) => (
 const cartbotGridButtonStyles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     paddingVertical: 8,
   },
   text: {
     color: Colors.headerBackgroundColor,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 13,
     marginEnd: 8,
   },
-  icon: {color: Colors.headerBackgroundColor, fontSize: 20},
+  icon: { color: Colors.headerBackgroundColor, fontSize: 20 },
 });
 
 // const MasterDataRow = ({ title, data }) => (
@@ -109,16 +110,16 @@ const CartbotGridView = ({
         Master Data
       </Text>
     </View>
-    <View style={{height: 1, backgroundColor: Colors.disabledTextColor}} />
-    <View style={{flex: 1}}>
+    <View style={{ height: 1, backgroundColor: Colors.disabledTextColor }} />
+    <View style={{ flex: 1 }}>
       <ScrollView>
-        <View style={{flex: 1}}>
-          <CartbotBodyRow title={'Title'} data={'Data'} />
-          {Object.keys(data).map(item => (
+        <View style={{ flex: 1 }}>
+          <CartbotBodyRow title={"Title"} data={"Data"} />
+          {data.map((item) => (
             <CartbotBodyRow
-              title={item}
-              data={data[item]}
-              style={{paddingVertical: 8}}
+              title={item.label}
+              data={item.value}
+              style={{ paddingVertical: 8 }}
             />
           ))}
         </View>
@@ -144,55 +145,58 @@ const CartbotGridView = ({
 const cartbotGridViewStyles = StyleSheet.create({
   container: {
     flex: 3,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
     marginTop: 16,
     width: width / 1.1,
   },
   header: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
+    justifyContent: "space-between",
+    flexDirection: "row",
     padding: 8,
     paddingStart: 12,
   },
-  title: {color: '#8091A1', fontSize: 13},
+  title: { color: "#8091A1", fontSize: 13 },
   actionsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderTopWidth: 1,
     borderColor: Colors.greyBorderColor,
     padding: 8,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
 });
 
-const CartbotBodyRow = ({title, data, style}) => (
+const CartbotBodyRow = ({ title, data, style }) => (
   <View>
     <ScrollView
-      contentContainerStyle={{flexGrow: 1}}
+      contentContainerStyle={{ flexGrow: 1 }}
       horizontal={true}
-      showsHorizontalScrollIndicator={false}>
-      <View style={[cartbotBodyRowStyles.container, {style}]}>
+      showsHorizontalScrollIndicator={false}
+    >
+      <View style={[cartbotBodyRowStyles.container, { style }]}>
         <Text
           style={[
             generalStyles.englishText,
             cartbotBodyRowStyles.title,
             {
               flex: 1,
-              textAlign: 'left',
+              textAlign: "left",
               marginStart: 16,
             },
           ]}
-          numberOfLines={1}>
+          numberOfLines={1}
+        >
           {title}
         </Text>
         <Text
           style={[
             generalStyles.englishText,
             cartbotBodyStyles.data,
-            {flex: 2, textAlign: 'left', marginStart: 16},
+            { flex: 2, textAlign: "left", marginStart: 16 },
           ]}
-          numberOfLines={1}>
+          numberOfLines={1}
+        >
           {data}
         </Text>
       </View>
@@ -210,17 +214,18 @@ const cartbotBodyRowStyles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 4,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
-  title: {color: Colors.textDarkColor, fontSize: 14},
-  data: {color: Colors.textLightColor, fontSize: 14},
+  title: { color: Colors.textDarkColor, fontSize: 14 },
+  data: { color: Colors.textLightColor, fontSize: 14 },
 });
 
-const CartbotBodyDescription = ({title, data}) => (
+const CartbotBodyDescription = ({ title, data }) => (
   <View style={cartbotBodyDescriptionStyles.container}>
     <ScrollView>
       <Text
-        style={[generalStyles.englishText, cartbotBodyDescriptionStyles.title]}>
+        style={[generalStyles.englishText, cartbotBodyDescriptionStyles.title]}
+      >
         {title}:
       </Text>
       <Text
@@ -230,8 +235,9 @@ const CartbotBodyDescription = ({title, data}) => (
           {
             color: !!data ? Colors.textLightColor : Colors.lightGreyColor,
           },
-        ]}>
-        {!!data ? data : '[not returned or denied]'}
+        ]}
+      >
+        {!!data ? data : "[not returned or denied]"}
       </Text>
     </ScrollView>
     <View
@@ -246,15 +252,15 @@ const CartbotBodyDescription = ({title, data}) => (
 const cartbotBodyDescriptionStyles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
-    alignItems: 'flex-start',
+    flexDirection: "column",
+    alignItems: "flex-start",
     padding: 4,
   },
-  title: {color: Colors.textDarkColor, fontSize: 14, marginStart: 16},
-  data: {fontSize: 14, marginStart: 16},
+  title: { color: Colors.textDarkColor, fontSize: 14, marginStart: 16 },
+  data: { fontSize: 14, marginStart: 16 },
 });
 
-const CartbotBody = ({from, creator, title, description}) => (
+const CartbotBody = ({ from, creator, title, description }) => (
   <View style={cartbotBodyStyles.container}>
     <CartbotBodyRow title="Title" data={title} />
     <CartbotBodyRow title="From" data={from} />
@@ -269,8 +275,8 @@ const CartbotBody = ({from, creator, title, description}) => (
 const cartbotBodyStyles = StyleSheet.create({
   container: {
     width: width / 1.1,
-    flex: Platform.OS === 'ios' ? 3 : 2,
-    backgroundColor: 'white',
+    flex: Platform.OS === "ios" ? 3 : 2,
+    backgroundColor: "white",
     borderRadius: 10,
     marginTop: 16,
   },
@@ -279,76 +285,93 @@ const cartbotBodyStyles = StyleSheet.create({
 export default class CartbotView extends Component {
   constructor(props) {
     super(props);
-    const {confirmation} = this.props.navigation.state.params;
+    const { confirmation } = this.props.navigation.state.params;
     this.confirmation = confirmation;
     this.state = {
       showModal: false,
       description: null,
-      type: '',
+      type: "",
       gridLoading: false,
       loadingConfirmButtons: false,
       loadingSubmitButton: false,
-      masterData: {},
+      masterData: [],
     };
   }
 
   async componentDidMount() {
-    this.setState({gridLoading: true});
-    const masterData = await masterDetailesQuery(
+    this.setState({ gridLoading: true });
+    let masterData = [];
+    try {
+      masterData = await masterDetailesQuery(
+        this.confirmation.formId,
+        this.confirmation.id
+      );
+    } catch (err) {}
+    const announcementRes = await announcementQuery(
       this.confirmation.formId,
-      this.confirmation.id,
+      this.confirmation.id
     );
-    this.setState({masterData, gridLoading: false});
+    this.setState({ masterData, gridLoading: false });
+    if (announcementRes && announcementRes.length > 0) {
+      this.onPressAnnounce(this.confirmation);
+    }
   }
 
   onBackPress() {
     this.props.navigation.goBack();
   }
+
   onPressHistoryOfActions(confirmation) {
-    this.props.navigation.navigate('HistoryOfActions', {
+    this.props.navigation.navigate("HistoryOfActions", {
       confirmation,
     });
   }
 
+  onPressAnnounce(confirmation) {
+    this.props.navigation.navigate("Announcement", {
+      confirmation,
+    });
+  }
+
+  onPressAttachment(confirmation) {
+    this.props.navigation.navigate("CartbotAttachment", {
+      cartbot: confirmation,
+      attachments: confirmation.attachments,
+    });
+  }
+
   onPressModalButton() {
-    if (this.state.type == 'Deny') {
+    if (this.state.type == "Deny") {
       this.denyConfirmation();
-    } else if (this.state.type == 'Return') {
+    } else if (this.state.type == "Return") {
       this.returnConfirmation();
     }
   }
 
   onChangeDescription(text) {
-    this.setState({description: text});
+    this.setState({ description: text });
   }
 
   showModal(type) {
     this.setState({
       showModal: true,
       type,
-      description: '',
+      description: "",
     });
   }
 
   dismissModal() {
     this.setState({
       showModal: false,
-      type: '',
-      description: '',
+      type: "",
+      description: "",
     });
   }
 
   async acceptConfirmation() {
-    const {
-      description,
-      formId,
-      formName,
-      historyId,
-      recordId,
-      userId,
-      id,
-    } = this.confirmation;
-    this.setState({loadingConfirmButtons: true});
+    const { description, formId, formName, historyId, recordId, userId, id } =
+      this.confirmation;
+    this.setState({ loadingConfirmButtons: true });
 
     const approveRes = await confirmationAprrove(
       description,
@@ -356,13 +379,13 @@ export default class CartbotView extends Component {
       formName,
       historyId,
       id,
-      userId,
+      userId
     );
-    this.setState({loadingConfirmButtons: false});
+    this.setState({ loadingConfirmButtons: false });
     if (!approveRes) {
       this.refs.errorToast.show(
         <ToastView message="Error in Approving Confirmation" />,
-        2000,
+        2000
       );
       return;
     }
@@ -372,28 +395,22 @@ export default class CartbotView extends Component {
 
   async returnConfirmation() {
     Keyboard.dismiss();
-    const {
-      formId,
-      formName,
-      historyId,
-      recordId,
-      userId,
-      id,
-    } = this.confirmation;
-    this.setState({loadingSubmitButton: true});
+    const { formId, formName, historyId, recordId, userId, id } =
+      this.confirmation;
+    this.setState({ loadingSubmitButton: true });
     const returnRes = await returnBackfromApprove(
       this.state.description,
       formId,
       formName,
       historyId,
       id,
-      userId,
+      userId
     );
-    this.setState({loadingSubmitButton: false});
+    this.setState({ loadingSubmitButton: false });
     if (!returnRes) {
       this.refs.errorToast.show(
         <ToastView message="Error in Denying Confirmation" />,
-        2000,
+        2000
       );
       return;
     }
@@ -404,28 +421,22 @@ export default class CartbotView extends Component {
 
   async denyConfirmation() {
     Keyboard.dismiss();
-    const {
-      formId,
-      formName,
-      historyId,
-      recordId,
-      userId,
-      id,
-    } = this.confirmation;
-    this.setState({loadingSubmitButton: true});
+    const { formId, formName, historyId, recordId, userId, id } =
+      this.confirmation;
+    this.setState({ loadingSubmitButton: true });
     const denyRes = await confirmationDeny(
       this.state.description,
       formId,
       formName,
       historyId,
       id,
-      userId,
+      userId
     );
-    this.setState({loadingSubmitButton: false});
+    this.setState({ loadingSubmitButton: false });
     if (!denyRes) {
       this.refs.errorToast.show(
         <ToastView message="Error in Denying Confirmation" />,
-        2000,
+        2000
       );
       return;
     }
@@ -435,13 +446,13 @@ export default class CartbotView extends Component {
   }
 
   async archiveConfirmation() {
-    this.setState({loadingConfirmButtons: true});
+    this.setState({ loadingConfirmButtons: true });
     const ArchiveRes = await confirmationArchive(this.confirmation.historyId);
-    this.setState({loadingConfirmButtons: false});
+    this.setState({ loadingConfirmButtons: false });
     if (!ArchiveRes) {
       this.refs.errorToast.show(
         <ToastView message="Error in Archiving Confirmation" />,
-        2000,
+        2000
       );
       return;
     }
@@ -462,7 +473,7 @@ export default class CartbotView extends Component {
     } = this.confirmation;
 
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <DescriptionModal
           isVisible={this.state.showModal}
           onBackPress={() => {
@@ -471,7 +482,7 @@ export default class CartbotView extends Component {
           onBackdropPress={() => {
             this.dismissModal();
           }}
-          onChangeDescription={text => this.onChangeDescription(text)}
+          onChangeDescription={(text) => this.onChangeDescription(text)}
           onSubmit={() => this.onPressModalButton()}
           loading={this.state.loadingSubmitButton}
         />
@@ -483,28 +494,51 @@ export default class CartbotView extends Component {
         <Header
           left={{
             icon: userStore.userPicture
-              ? {uri: `data:image/png;base64,${userStore.userPicture}`}
+              ? { uri: `data:image/png;base64,${userStore.userPicture}` }
               : images.icon_user,
           }}
           right={{
             icon: images.icon_report,
             onPress: () => this.onPressHistoryOfActions(this.confirmation),
           }}
+          rightSecond={{
+            icon: images.icon_announce,
+            onPress: () => this.onPressAnnounce(this.confirmation),
+            style: {
+              tintColor: "white",
+            },
+          }}
+          rightThird={
+            this.confirmation.attachments &&
+            this.confirmation.attachments.length > 0
+              ? {
+                  icon: images.icon_attachment,
+                  onPress: () => this.onPressAttachment(this.confirmation),
+                  style: {
+                    tintColor: "white",
+                  },
+                }
+              : null
+          }
         />
-        <View style={[generalStyles.mailContainer, {alignItems: 'flex-start'}]}>
+        <View
+          style={[generalStyles.mailContainer, { alignItems: "flex-start" }]}
+        >
           <View
             style={{
               width: width,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
+              flexDirection: "row",
+              justifyContent: "space-between",
               paddingEnd: 20,
-            }}>
+            }}
+          >
             <TouchableOpacity
               style={{
-                flexDirection: 'row',
-                alignItems: 'center',
+                flexDirection: "row",
+                alignItems: "center",
               }}
-              onPress={() => this.onBackPress()}>
+              onPress={() => this.onBackPress()}
+            >
               <Icon
                 name="keyboard-arrow-left"
                 style={{
@@ -517,16 +551,16 @@ export default class CartbotView extends Component {
                 {procedureName}
               </Text>
             </TouchableOpacity>
-            <View style={{flexDirection: 'row', marginEnd: 8}}>
+            <View style={{ flexDirection: "row", marginEnd: 8 }}>
               <Text style={[generalStyles.englishText, styles.text]}>
-                {time_en.substring(0, 10)}{' '}
+                {time_en.substring(0, 10)}{" "}
               </Text>
               {!attachments && (
                 <Image
                   style={{
                     width: width / 35,
                     height: height / 35,
-                    resizeMode: 'contain',
+                    resizeMode: "contain",
                     marginEnd: 4,
                   }}
                   source={images.icon_attachment}
@@ -545,13 +579,13 @@ export default class CartbotView extends Component {
               this.archiveConfirmation();
             }}
             onPressDeny={() => {
-              this.showModal('Deny');
+              this.showModal("Deny");
             }}
             onPressAccept={() => {
               this.acceptConfirmation();
             }}
             onPressReturn={() => {
-              this.showModal('Return');
+              this.showModal("Return");
             }}
             loading={this.state.gridLoading}
             data={this.state.masterData}
@@ -559,21 +593,21 @@ export default class CartbotView extends Component {
         </View>
         <Toast
           ref="errorToast"
-          style={{backgroundColor: Colors.lightRed}}
+          style={{ backgroundColor: Colors.lightRed }}
           position="top"
           positionValue={32}
-          textStyle={{color: Colors.white}}
+          textStyle={{ color: Colors.white }}
         />
         <Toast
           ref="successToast"
           style={{
             backgroundColor: Colors.lightGreen,
             width: 200,
-            alignItems: 'center',
+            alignItems: "center",
           }}
           position="top"
           positionValue={32}
-          textStyle={{color: Colors.white}}
+          textStyle={{ color: Colors.white }}
         />
       </View>
     );
@@ -583,7 +617,7 @@ export default class CartbotView extends Component {
 const styles = StyleSheet.create({
   text: {
     color: Colors.lightGreyColor,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 12,
   },
 });

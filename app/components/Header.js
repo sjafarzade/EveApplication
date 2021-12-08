@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   View,
   Dimensions,
@@ -6,13 +6,13 @@ import {
   Image,
   TouchableOpacity,
   StyleSheet,
-} from 'react-native';
-import { ifIphoneX,getStatusBarHeight } from 'react-native-iphone-x-helper'
+} from "react-native";
+import { ifIphoneX, getStatusBarHeight } from "react-native-iphone-x-helper";
 
-import Colors from '../constants/colors';
-import images from '@assets/images';
+import Colors from "../constants/colors";
+import images from "@assets/images";
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const HeaderChild = ({
   source,
@@ -26,14 +26,14 @@ const HeaderChild = ({
   <TouchableOpacity
     onPress={onPress}
     disabled={!clickable}
-    style={{ flexDirection: 'row', alignItems: 'center' }}
+    style={{ flexDirection: "row", alignItems: "center" }}
   >
     <Image
       style={[
         {
           height: 36,
           width: 36,
-          resizeMode: round ? 'cover' : 'contain',
+          resizeMode: round ? "cover" : "contain",
           marginHorizontal: 8,
           borderRadius: round ? 18 : 0,
         },
@@ -46,7 +46,7 @@ const HeaderChild = ({
 
 export class Header extends React.Component {
   render() {
-    const { right, left } = this.props;
+    const { right, left, rightSecond, rightThird } = this.props;
     return (
       <View style={styles.container}>
         {left ? (
@@ -60,16 +60,33 @@ export class Header extends React.Component {
         ) : (
           <View />
         )}
-        {right ? (
-          <HeaderChild
-            source={right.icon}
-            onPress={right.onPress}
-            clickable={!!right.onPress}
-            style={right.style}
-          />
-        ) : (
-          <View />
-        )}
+        <View style={styles.row}>
+          {rightThird && 
+             <HeaderChild 
+             source={rightThird.icon}
+             onPress={rightThird.onPress}
+             clickable={!!rightThird.onPress}
+             style={rightThird.style}
+           />}
+          {rightSecond && (
+            <HeaderChild
+              source={rightSecond.icon}
+              onPress={rightSecond.onPress}
+              clickable={!!rightSecond.onPress}
+              style={rightSecond.style}
+            />
+          )}
+          {right ? (
+            <HeaderChild
+              source={right.icon}
+              onPress={right.onPress}
+              clickable={!!right.onPress}
+              style={right.style}
+            />
+          ) : (
+            <View />
+          )}
+        </View>
       </View>
     );
   }
@@ -77,16 +94,23 @@ export class Header extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: Colors.headerBackgroundColor,
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingBottom: 16,
-    ...ifIphoneX({
-            paddingTop: getStatusBarHeight()+16
-        }, {
-            paddingTop: 16
-        })
+    ...ifIphoneX(
+      {
+        paddingTop: getStatusBarHeight() + 16,
+      },
+      {
+        paddingTop: 16,
+      }
+    ),
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
 

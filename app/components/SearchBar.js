@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   View,
   Image,
@@ -7,11 +7,12 @@ import {
   Dimensions,
   TextInput,
   Platform,
-} from 'react-native';
+} from "react-native";
 
-const { width, height } = Dimensions.get('window');
-import Colors from '../constants/colors';
-import images from '@assets/images';
+const { width, height } = Dimensions.get("window");
+import Colors from "../constants/colors";
+import images from "@assets/images";
+import colors from "../constants/colors";
 
 export default class Search extends Component {
   render() {
@@ -33,6 +34,7 @@ export default class Search extends Component {
               placeholderTextColor={Colors.lightGreyColor}
               placeholder={placeholder}
               value={value}
+              underlineColorAndroid={colors.transparent}
             />
           </View>
           <TouchableOpacity style={{ padding: 8 }} onPress={onClear}>
@@ -48,11 +50,11 @@ export default class Search extends Component {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: Colors.backgroundColor,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: Platform.OS == 'ios' ? 8 : 2,
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: Platform.OS == "ios" ? 8 : 2,
   },
   image: {
     height: 12,
@@ -61,8 +63,8 @@ const styles = StyleSheet.create({
   },
   leftContainer: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   input: {
     color: Colors.textDarkColor,

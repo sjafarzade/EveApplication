@@ -1,10 +1,10 @@
-import { observable, computed, action, decorate } from 'mobx';
+import { observable, computed, action, decorate } from "mobx";
 import {
   TODO_STATUS_DONE,
   TODO_STATUS_PENDING,
   TODO_STATUS_EXPIRED,
   ALL_CORRESPONDENCES_FOLDER_ID,
-} from '../constants/constants';
+} from "../constants/constants";
 
 class UserStore {
   username;
@@ -29,38 +29,38 @@ class UserStore {
   userPicture = null;
   selectedFolder = ALL_CORRESPONDENCES_FOLDER_ID;
   todoList = [
-    { id: 1, status: TODO_STATUS_PENDING, text: 'Go to the station' },
+    { id: 1, status: TODO_STATUS_PENDING, text: "Go to the station" },
     {
       id: 2,
       status: TODO_STATUS_EXPIRED,
-      text: 'Call Sadra to arrange appointment',
+      text: "Call Sadra to arrange appointment",
     },
-    { id: 3, status: TODO_STATUS_PENDING, text: 'Visit doctor' },
+    { id: 3, status: TODO_STATUS_PENDING, text: "Visit doctor " },
     {
       id: 4,
       statwhiteus: TODO_STATUS_PENDING,
-      text: 'Help Sara to implement todo',
+      text: "Help Sara to implement todo",
     },
-    { id: 5, status: TODO_STATUS_EXPIRED, text: 'Talk with Shervin on new UI' },
+    { id: 5, status: TODO_STATUS_EXPIRED, text: "Talk with Shervin on new UI" },
     {
       id: 6,
       status: TODO_STATUS_PENDING,
-      text: 'Go bank and make new cash account',
+      text: "Go bank and make new cash account",
     },
     {
       id: 7,
       status: TODO_STATUS_DONE,
-      text: 'Believing neglected so so allowance existence departure in',
+      text: "Believing neglected so so allowance existence departure in",
     },
     {
       id: 8,
       status: TODO_STATUS_PENDING,
-      text: 'Allow miles wound place the leave had.',
+      text: "Allow miles wound place the leave had.",
     },
     {
       id: 9,
       status: TODO_STATUS_PENDING,
-      text: 'Get car back from carwash',
+      text: "Get car back from carwash",
     },
   ];
 
@@ -90,7 +90,7 @@ class UserStore {
 
   setCorrespondenceAttachments(correspondenceId, attachments) {
     const correspondence = this.correspondences.find(
-      item => item.number == correspondenceId,
+      (item) => item.number == correspondenceId
     );
     if (!!correspondence) {
       correspondence.attachments = attachments;
@@ -99,7 +99,7 @@ class UserStore {
 
   setCorrespondenceContent(correspondenceId, content) {
     const correspondence = this.correspondences.find(
-      item => item.number == correspondenceId,
+      (item) => item.number == correspondenceId
     );
     if (!!correspondence) {
       correspondence.content = content;
@@ -108,7 +108,7 @@ class UserStore {
 
   setConfirmationAttachments(confirmationId, attachments) {
     const confirmation = this.confirmations.find(
-      item => item.id == confirmationId,
+      (item) => item.id == confirmationId
     );
     if (!!confirmation) {
       confirmation.attachments = attachments;
@@ -116,7 +116,7 @@ class UserStore {
   }
 
   updateTodo(todo) {
-    this.todoList = this.todoList.filter(item => item.id !== todo.id);
+    this.todoList = this.todoList.filter((item) => item.id !== todo.id);
     this.todoList.unshift(todo);
   }
 
@@ -142,11 +142,11 @@ class UserStore {
 
   changeCorrespondenceSeenInStore(correspondenceId) {
     const correspondence = this.correspondences.find(
-      item => item.number == correspondenceId,
+      (item) => item.number == correspondenceId
     );
     correspondence.seen = true;
     const correspondenceIndex = this.correspondences.findIndex(
-      item => item.number == correspondenceId,
+      (item) => item.number == correspondenceId
     );
 
     this.correspondences = [
@@ -154,7 +154,7 @@ class UserStore {
       correspondence,
       ...this.correspondences.slice(
         correspondenceIndex + 1,
-        this.correspondences.length,
+        this.correspondences.length
       ),
     ];
   }
@@ -189,7 +189,7 @@ class UserStore {
 
   removeConfirmationFromStore(confirmationId) {
     this.confirmations = this.confirmations.filter(
-      item => item.id !== confirmationId,
+      (item) => item.id !== confirmationId
     );
   }
 }

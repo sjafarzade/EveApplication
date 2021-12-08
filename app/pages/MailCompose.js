@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from "react";
 import {
   Text,
   View,
@@ -11,42 +11,43 @@ import {
   FlatList,
   Platform,
   Image,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {DotsLoader} from 'react-native-indicator';
-import splitEvery from 'split-every';
-import * as R from 'ramda';
-import Toast, {DURATION} from 'react-native-easy-toast';
-import {observer} from 'mobx-react/native';
+} from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { DotsLoader } from "react-native-indicator";
+import splitEvery from "split-every";
+import * as R from "ramda";
+import Toast, { DURATION } from "react-native-easy-toast";
+import { observer } from "mobx-react/native";
 
-import {Switch} from 'react-native-switch';
-import {NavigationActions} from 'react-navigation';
+import { Switch } from "react-native-switch";
+import { NavigationActions } from "react-navigation";
 
-import generalStyles from '../constants/styles';
-import {Header, LookUpModal, ToastView} from '@components';
-import Colors from '../constants/colors';
-import images from '@assets/images';
+import generalStyles from "../constants/styles";
+import { Header, LookUpModal, ToastView } from "@components";
+import Colors from "../constants/colors";
+import images from "@assets/images";
 import {
   getPersonsLookupQuery,
   getPriorityLookupQuery,
   getReferenceTypeLookupQuery,
   postNewCorrespondence,
-} from '../network/queries';
-import {userStore} from '../stores';
-import {PAGE_SIZE} from '../constants/constants';
-import {createRandomId} from '../utils';
-import WithKeyboardAvoiding from '../hoc/withKeyboardAvoiding';
+} from "../network/queries";
+import { userStore } from "../stores";
+import { PAGE_SIZE } from "../constants/constants";
+import { createRandomId } from "../utils";
+import WithKeyboardAvoiding from "../hoc/withKeyboardAvoiding";
 
-let {width, height} = Dimensions.get('window');
+let { width, height } = Dimensions.get("window");
 
-const ReceiverRowItem = ({item, onPress}) => (
+const ReceiverRowItem = ({ item, onPress }) => (
   <View style={receiverRowItemStyles.container}>
     <Text style={receiverRowItemStyles.text} numberOfLines={1}>
       {item.name}
     </Text>
     <TouchableOpacity
       style={receiverRowItemStyles.button}
-      onPress={() => onPress(item)}>
+      onPress={() => onPress(item)}
+    >
       <Image source={images.icon_cross} style={receiverRowItemStyles.image} />
     </TouchableOpacity>
   </View>
@@ -54,15 +55,15 @@ const ReceiverRowItem = ({item, onPress}) => (
 
 const receiverRowItemStyles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: Colors.lightGreyColor,
     padding: 4,
     paddingStart: 16,
     borderRadius: 32,
     marginVertical: 4,
     marginHorizontal: 4,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   text: {
     color: Colors.white,
@@ -76,31 +77,37 @@ const receiverRowItemStyles = StyleSheet.create({
     tintColor: Colors.white,
     height: 12,
     width: 12,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
 });
 
-const ReceiverRow = ({title, onPress, icon, list = [], type, onDelete}) => {
+const ReceiverRow = ({ title, onPress, icon, list = [], type, onDelete }) => {
   const rowList = splitEvery(2, list);
   return (
-    <View style={[headerStyles.itemsStyle, {alignItems: 'flex-start'}]}>
+    <View style={[headerStyles.itemsStyle, { alignItems: "flex-start" }]}>
       <Text
-        style={[generalStyles.englishText, headerStyles.text, {marginTop: 16}]}>
+        style={[
+          generalStyles.englishText,
+          headerStyles.text,
+          { marginTop: 16 },
+        ]}
+      >
         {title}:
       </Text>
-      <View style={{marginStart: 8, marginTop: 8, flex: 1}}>
+      <View style={{ marginStart: 8, marginTop: 8, flex: 1 }}>
         {rowList.map((rowListItem, index) => (
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'flex-start',
+              flexDirection: "row",
+              justifyContent: "flex-start",
             }}
-            key={index}>
-            {rowListItem.map(item => (
+            key={index}
+          >
+            {rowListItem.map((item) => (
               <ReceiverRowItem
                 item={item}
                 type={type}
-                onPress={item => onDelete(item, type)}
+                onPress={(item) => onDelete(item, type)}
               />
             ))}
           </View>
@@ -111,20 +118,20 @@ const ReceiverRow = ({title, onPress, icon, list = [], type, onDelete}) => {
   );
 };
 
-const ReceiverInput = ({title, value, onChange}) => {
+const ReceiverInput = ({ title, value, onChange }) => {
   return (
-    <View style={[headerStyles.itemsStyle, {alignItems: 'center'}]}>
+    <View style={[headerStyles.itemsStyle, { alignItems: "center" }]}>
       <Text style={[generalStyles.englishText, headerStyles.text]}>
         {title}:
       </Text>
       <TextInput
         style={[
           headerStyles.input,
-          Platform.OS == 'ios' && {paddingVertical: 16},
+          Platform.OS == "ios" && { paddingVertical: 16 },
         ]}
         placeholderTextColor={Colors.textLightColor}
         value={value}
-        onChangeText={text => onChange(text)}
+        onChangeText={(text) => onChange(text)}
       />
     </View>
   );
@@ -142,18 +149,19 @@ const HeaderRowWithPicker = ({
   <View style={[headerStyles.container, containerStyle]}>
     <Text style={[generalStyles.englishText, headerStyles.text]}>{title}:</Text>
     <Picker
-      style={[headerStyles.picker, Platform.os == 'ios' && {height: 84}]}
-      itemStyle={{height: 84}}
+      style={[headerStyles.picker, Platform.os == "ios" && { height: 84 }]}
+      itemStyle={{ height: 84 }}
       onValueChange={(itemValue, itemIndex) => onChangeValue(itemValue, type)}
-      selectedValue={selectedValue}>
-      {pickerList.map(item => (
+      selectedValue={selectedValue}
+    >
+      {pickerList.map((item) => (
         <Picker.Item label={item.text} value={item.id} />
       ))}
     </Picker>
   </View>
 );
 
-const HeaderRowWithSwitch = ({title, value, onChange}) => (
+const HeaderRowWithSwitch = ({ title, value, onChange }) => (
   <View style={headerStyles.container}>
     <Text
       style={[
@@ -162,12 +170,13 @@ const HeaderRowWithSwitch = ({title, value, onChange}) => (
           marginEnd: 8,
         },
         headerStyles.text,
-      ]}>
+      ]}
+    >
       {title}
     </Text>
     <Switch
       value={value}
-      onValueChange={value => onChange(value)}
+      onValueChange={(value) => onChange(value)}
       innerCircleStyle={headerStyles.switch}
       disabled={false}
       circleBorderWidth={0}
@@ -181,11 +190,11 @@ const HeaderRowWithSwitch = ({title, value, onChange}) => (
 
 const headerStyles = StyleSheet.create({
   itemsStyle: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: Colors.disabledTextColor,
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   text: {
     color: Colors.textLightColor,
@@ -194,7 +203,7 @@ const headerStyles = StyleSheet.create({
   },
   icon: {
     color: Colors.textDarkColor,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 18,
     padding: 16,
   },
@@ -204,8 +213,8 @@ const headerStyles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 2,
     marginBottom: 2,
   },
@@ -221,7 +230,7 @@ const headerStyles = StyleSheet.create({
   },
 });
 
-const FormInput = ({onChangeMessage, message, style}) => (
+const FormInput = ({ onChangeMessage, message, style }) => (
   <View style={formInputStyles.container}>
     <View style={formInputStyles.inputContainer}>
       <TextInput
@@ -231,12 +240,12 @@ const FormInput = ({onChangeMessage, message, style}) => (
           formInputStyles.input,
           style,
         ]}
-        underlineColorAndroid={'white'}
+        underlineColorAndroid={"white"}
         multiline={true}
-        textAlignVertical={'top'}
+        textAlignVertical={"top"}
         value={message}
-        onChangeText={message => onChangeMessage(message)}
-        placeholder={'Enter your message...'}
+        onChangeText={(message) => onChangeMessage(message)}
+        placeholder={"Enter your message..."}
         placeholderTextColor={Colors.lightGreyColor}
       />
     </View>
@@ -249,11 +258,11 @@ const formInputStyles = StyleSheet.create({
     marginEnd: 16,
     marginStart: 8,
   },
-  inputContainer: {flexDirection: 'row', flex: 1},
+  inputContainer: { flexDirection: "row", flex: 1 },
   input: {
     flex: 1,
-    borderColor: 'white',
-    padding: Platform.OS == 'ios' ? 16 : 4,
+    borderColor: "white",
+    padding: Platform.OS == "ios" ? 16 : 4,
   },
   composeInputTexts: {
     fontSize: 15,
@@ -277,28 +286,31 @@ const Footer = ({
   attachmentCount,
   disabledAttach,
 }) => (
-  <View style={{flex: 2}}>
-    <View style={{backgroundColor: Colors.greyBorderColor, height: 0.5}} />
+  <View style={{ flex: 2 }}>
+    <View style={{ backgroundColor: Colors.greyBorderColor, height: 0.5 }} />
     <View style={footerStyles.footerContiner}>
       <TouchableOpacity
         style={{
           paddingVertical: 12,
           paddingHorizontal: 8,
         }}
-        onPress={onPressCancel}>
+        onPress={onPressCancel}
+      >
         <Text
           style={[
             generalStyles.englishText,
-            {fontSize: 14, color: Colors.textLightColor},
-          ]}>
+            { fontSize: 14, color: Colors.textLightColor },
+          ]}
+        >
           CANCEL
         </Text>
       </TouchableOpacity>
-      <View style={{flex: 1}} />
+      <View style={{ flex: 1 }} />
       <View style={footerStyles.buttonContainer}>
         <TouchableOpacity
           onPress={() => onPressAttach()}
-          disabled={disabledAttach}>
+          disabled={disabledAttach}
+        >
           <View style={footerStyles.attachIconContainer}>
             <Icon active name="attach-file" style={footerStyles.attachIcon} />
           </View>
@@ -307,7 +319,8 @@ const Footer = ({
               style={{
                 ...StyleSheet.absoluteFillObject,
                 flex: 1,
-              }}>
+              }}
+            >
               <View style={footerStyles.counterContainer}>
                 <Text style={footerStyles.counterText}>{attachmentCount}</Text>
               </View>
@@ -315,9 +328,10 @@ const Footer = ({
           )}
         </TouchableOpacity>
         <TouchableOpacity
-          style={[footerStyles.button, disabled && {opacity: 0.7}]}
+          style={[footerStyles.button, disabled && { opacity: 0.7 }]}
           onPress={onPressSend}
-          disabled={disabled || loading}>
+          disabled={disabled || loading}
+        >
           {!loading ? (
             <Text style={[generalStyles.englishText, footerStyles.text]}>
               SEND
@@ -333,17 +347,17 @@ const Footer = ({
 
 const footerStyles = StyleSheet.create({
   footerContiner: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   counterContainer: {
     height: 20,
     width: 20,
-    backgroundColor: 'red',
+    backgroundColor: "red",
     borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   counterText: {
     color: Colors.white,
@@ -354,20 +368,20 @@ const footerStyles = StyleSheet.create({
     borderColor: Colors.greyBorderColor,
     padding: 8,
     borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     marginHorizontal: 8,
   },
   attachIcon: {
     color: Colors.textLightColor,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 23,
-    textAlign: 'center',
+    textAlign: "center",
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
     marginVertical: 8,
     marginHorizontal: 8,
   },
@@ -375,13 +389,13 @@ const footerStyles = StyleSheet.create({
     width: width / 3.2,
     height: height / 15,
     backgroundColor: Colors.switchActiveColor,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderRadius: 20,
   },
   text: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 13,
   },
 });
@@ -392,62 +406,66 @@ class Compose extends React.Component {
     this.randomId = createRandomId();
     this.letterNo = R.pathOr(
       null,
-      ['navigation', 'state', 'params', 'letterNo'],
-      this.props,
+      ["navigation", "state", "params", "letterNo"],
+      this.props
     );
     this.number = R.pathOr(
       null,
-      ['navigation', 'state', 'params', 'number'],
-      this.props,
+      ["navigation", "state", "params", "number"],
+      this.props
     );
     const toPassedList = R.pathOr(
       [],
-      ['navigation', 'state', 'params', 'toList'],
-      this.props,
+      ["navigation", "state", "params", "toList"],
+      this.props
     );
     const ccPassedList = R.pathOr(
       [],
-      ['navigation', 'state', 'params', 'ccList'],
-      this.props,
+      ["navigation", "state", "params", "ccList"],
+      this.props
     );
     let subject = R.pathOr(
-      '',
-      ['navigation', 'state', 'params', 'subject'],
-      this.props,
+      "",
+      ["navigation", "state", "params", "subject"],
+      this.props
     );
-    const content = R.pathOr(
-      '',
-      ['navigation', 'state', 'params', 'content'],
-      this.props,
+    this.content = R.pathOr(
+      "",
+      ["navigation", "state", "params", "content"],
+      this.props
     );
 
     let attachments = R.pathOr(
       [],
-      ['navigation', 'state', 'params', 'attachments'],
-      this.props,
+      ["navigation", "state", "params", "attachments"],
+      this.props
     );
-    attachments = attachments.map(item => Object.assign(item, {persist: true}));
+    attachments = attachments.map((item) =>
+      Object.assign(item, { persist: true })
+    );
 
     let attachmentViews = R.pathOr(
       [],
-      ['navigation', 'state', 'params', 'attachments'],
-      this.props,
+      ["navigation", "state", "params", "attachments"],
+      this.props
     );
-    attachmentViews = attachmentViews.map(item =>
-      Object.assign(item, {persist: true}),
+    attachmentViews = attachmentViews.map((item) =>
+      Object.assign(item, { persist: true })
     );
 
     this.state = {
       switchValue: false,
       sendButtonLoading: false,
-      messageBody: content,
+      messageBody: this.content
+        ? `\n--------------------------------\n${this.content}`
+        : "",
       attachments,
       attachmentViews,
 
       showLookUp: false,
       toList: toPassedList,
       ccList: ccPassedList,
-      mode: 'TO',
+      mode: "TO",
       subject: subject,
       reference: null,
       priority: null,
@@ -457,32 +475,32 @@ class Compose extends React.Component {
 
   async onLoadMore() {
     if (!!this.state.searchText || this.state.loadingMore) return;
-    this.setState({loadingMore: true});
+    this.setState({ loadingMore: true });
     if (userStore.persons.length % PAGE_SIZE == 0) {
       await getPersonsLookupQuery(
-        Math.floor(userStore.persons.length / PAGE_SIZE),
+        Math.floor(userStore.persons.length / PAGE_SIZE)
       );
     }
-    this.setState({loadingMore: false});
+    this.setState({ loadingMore: false });
   }
 
   toggleModal() {
-    this.setState({showLookUp: !this.state.showLookUp});
+    this.setState({ showLookUp: !this.state.showLookUp });
   }
 
   onPressAddIcon(mode) {
-    this.setState({showLookUp: true, mode});
+    this.setState({ showLookUp: true, mode });
   }
 
   onPressCloseModal() {
-    this.setState({showLookUp: false});
+    this.setState({ showLookUp: false });
   }
 
   async componentDidMount() {
     await getPriorityLookupQuery();
     await getReferenceTypeLookupQuery();
-    const reference = R.pathOr(null, ['referenceTypes', '0', 'id'], userStore);
-    const priority = R.pathOr(null, ['priorities', '0', 'id'], userStore);
+    const reference = R.pathOr(null, ["referenceTypes", "0", "id"], userStore);
+    const priority = R.pathOr(null, ["priorities", "0", "id"], userStore);
     await this.setState({
       reference,
       priority: 0,
@@ -490,25 +508,25 @@ class Compose extends React.Component {
   }
 
   setAttchments(attachments) {
-    this.setState({attachments});
+    this.setState({ attachments });
   }
 
   async addItemToList(item, mode) {
-    const {userId, username} = item;
-    const {toList, ccList} = this.state;
+    const { userId, username } = item;
+    const { toList, ccList } = this.state;
     switch (mode) {
-      case 'TO':
-        if (toList.find(item => item.name == username)) return;
+      case "TO":
+        if (toList.find((item) => item.name == username)) return;
         await this.setState({
-          toList: [...toList, {name: username, id: userId}],
+          toList: [...toList, { name: username, id: userId }],
           showLookUp: false,
         });
 
         break;
-      case 'CC':
-        if (ccList.find(item => item.name == username)) return;
+      case "CC":
+        if (ccList.find((item) => item.name == username)) return;
         await this.setState({
-          ccList: [...ccList, {name: username, id: userId}],
+          ccList: [...ccList, { name: username, id: userId }],
           showLookUp: false,
         });
 
@@ -518,18 +536,18 @@ class Compose extends React.Component {
 
   async deleteItemFromList(item, mode) {
     switch (mode) {
-      case 'TO':
+      case "TO":
         await this.setState({
           toList: this.state.toList.filter(
-            listItem => listItem.name !== item.name,
+            (listItem) => listItem.name !== item.name
           ),
           showLookUp: false,
         });
         break;
-      case 'CC':
+      case "CC":
         await this.setState({
           ccList: this.state.ccList.filter(
-            listItem => listItem.name !== item.name,
+            (listItem) => listItem.name !== item.name
           ),
           showLookUp: false,
         });
@@ -538,7 +556,7 @@ class Compose extends React.Component {
   }
 
   async onSendPress() {
-    this.setState({sendButtonLoading: true});
+    this.setState({ sendButtonLoading: true });
     const {
       switchValue: isSecure,
       messageBody: message,
@@ -550,10 +568,17 @@ class Compose extends React.Component {
     } = this.state;
     let response = null;
     try {
+      let finalMessage = message;
+      if (this.content) {
+        const newMessage = message.split(
+          "\n--------------------------------\n"
+        )[0];
+        finalMessage = `${newMessage}###${this.content}`;
+      }
       response = await postNewCorrespondence(
         {
           isSecure,
-          message,
+          message: finalMessage,
           toList,
           ccList,
           subject,
@@ -562,32 +587,32 @@ class Compose extends React.Component {
         },
         this.randomId,
         this.letterNo,
-        this.number,
+        this.number
       );
     } catch (e) {}
-    this.setState({sendButtonLoading: false});
+    this.setState({ sendButtonLoading: false });
 
     if (!!response) {
       this.props.navigation.pop();
       this.refs.successToast.show(
         <ToastView message="Successfully Sent" />,
-        2000,
+        2000
       );
     } else {
       this.refs.errorToast.show(
         <ToastView message="Error in Composing Correspondence" />,
-        2000,
+        2000
       );
     }
   }
 
   async onChangePicker(value, type) {
     switch (type) {
-      case 'Reference':
-        await this.setState({reference: value});
+      case "Reference":
+        await this.setState({ reference: value });
         break;
-      case 'Priority':
-        await this.setState({priority: value});
+      case "Priority":
+        await this.setState({ priority: value });
         break;
     }
   }
@@ -597,7 +622,7 @@ class Compose extends React.Component {
   }
 
   onAttach() {
-    this.props.navigation.navigate('AttachFile', {
+    this.props.navigation.navigate("AttachFile", {
       onAttach: (attachments, attachmentViews) =>
         this.setAttachments(attachments, attachmentViews),
       randomId: this.randomId,
@@ -608,7 +633,7 @@ class Compose extends React.Component {
   }
 
   setAttachments(attachments, attachmentViews) {
-    this.setState({attachments, attachmentViews});
+    this.setState({ attachments, attachmentViews });
   }
 
   onCancel() {
@@ -620,7 +645,7 @@ class Compose extends React.Component {
       <View style={styles.itemsContainer}>
         <ReceiverRow
           title="To"
-          onPress={() => this.onPressAddIcon('TO')}
+          onPress={() => this.onPressAddIcon("TO")}
           onDelete={(item, mode) => this.deleteItemFromList(item, mode)}
           icon="add"
           list={this.state.toList}
@@ -628,7 +653,7 @@ class Compose extends React.Component {
         />
         <ReceiverRow
           title="Cc"
-          onPress={() => this.onPressAddIcon('CC')}
+          onPress={() => this.onPressAddIcon("CC")}
           icon="add"
           list={this.state.ccList}
           type="CC"
@@ -637,9 +662,9 @@ class Compose extends React.Component {
         <ReceiverInput
           title="Subject"
           value={this.state.subject}
-          onChange={text => this.setState({subject: text})}
+          onChange={(text) => this.setState({ subject: text })}
         />
-        <View style={[headerStyles.itemsStyle, {alignItems: 'center'}]}>
+        <View style={[headerStyles.itemsStyle, { alignItems: "center" }]}>
           <HeaderRowWithPicker
             title="Referal Type"
             pickerList={userStore.referenceTypes}
@@ -648,10 +673,10 @@ class Compose extends React.Component {
             selectedValue={this.state.reference}
           />
         </View>
-        <View style={[headerStyles.itemsStyle, {alignItems: 'center'}]}>
+        <View style={[headerStyles.itemsStyle, { alignItems: "center" }]}>
           <HeaderRowWithPicker
             title="Priority"
-            pickerList={[{id: 1, text: 'none'}, ...userStore.priorities]}
+            pickerList={[{ id: 1, text: "none" }, ...userStore.priorities]}
             containerStyle={{
               borderRightWidth: 1,
             }}
@@ -662,13 +687,16 @@ class Compose extends React.Component {
           <HeaderRowWithSwitch
             title="Confidential"
             value={this.state.switchValue}
-            onChange={switchValue => this.setState({switchValue})}
+            onChange={(switchValue) => this.setState({ switchValue })}
           />
         </View>
         <FormInput
+          staticMessage={this.content}
           message={this.state.messageBody}
-          onChangeMessage={messageBody => this.setState({messageBody})}
-          style={{height: 200}}
+          onChangeMessage={(messageBody) =>
+            this.onChangeMessageBody(messageBody)
+          }
+          style={{ height: 200 }}
         />
         <Footer
           onPressSend={() => this.onSendPress()}
@@ -686,14 +714,18 @@ class Compose extends React.Component {
     );
   }
 
+  onChangeMessageBody(message) {
+    this.setState({ messageBody: message });
+  }
+
   render() {
     return (
       <WithKeyboardAvoiding>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Header
             left={{
               icon: userStore.userPicture
-                ? {uri: `data:image/png;base64,${userStore.userPicture}`}
+                ? { uri: `data:image/png;base64,${userStore.userPicture}` }
                 : images.icon_user,
             }}
           />
@@ -702,10 +734,11 @@ class Compose extends React.Component {
             style={{
               marginStart: 16,
               marginTop: 16,
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
             }}
-            onPress={() => this.onBackPress()}>
+            onPress={() => this.onBackPress()}
+          >
             <Icon
               name="keyboard-arrow-left"
               style={{
@@ -731,21 +764,21 @@ class Compose extends React.Component {
           />
           <Toast
             ref="errorToast"
-            style={{backgroundColor: Colors.lightRed}}
+            style={{ backgroundColor: Colors.lightRed }}
             position="top"
             positionValue={32}
-            textStyle={{color: Colors.white}}
+            textStyle={{ color: Colors.white }}
           />
           <Toast
             ref="successToast"
             style={{
               backgroundColor: Colors.lightGreen,
               width: 200,
-              alignItems: 'center',
+              alignItems: "center",
             }}
             position="top"
             positionValue={32}
-            textStyle={{color: Colors.white}}
+            textStyle={{ color: Colors.white }}
           />
         </View>
       </WithKeyboardAvoiding>
@@ -756,14 +789,14 @@ class Compose extends React.Component {
 const styles = StyleSheet.create({
   itemsContainer: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     margin: 16,
   },
   text: {
     color: Colors.lightGreyColor,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     fontSize: 12,
   },
 });

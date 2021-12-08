@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from "react";
 import {
   AppRegistry,
   StyleSheet,
@@ -8,15 +8,15 @@ import {
   Dimensions,
   TouchableWithoutFeedback,
   Keyboard,
-} from 'react-native';
-import {StackNavigator, DrawerNavigator} from 'react-navigation';
-import Orientation from 'react-native-orientation';
+} from "react-native";
+import { StackNavigator, DrawerNavigator } from "react-navigation";
+import Orientation from "react-native-orientation";
 
-import * as components from '@components';
-import * as screens from '@screens';
-import {userStore} from './stores';
+import * as components from "@components";
+import * as screens from "@screens";
+import { userStore } from "./stores";
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get("window");
 // console.disableYellowBox = true;
 export default class EveApp extends Component {
   componentWillMount() {
@@ -28,15 +28,17 @@ export default class EveApp extends Component {
       <View
         style={{
           flex: 1,
-        }}>
-        <View style={{...StyleSheet.absoluteFillObject, flex: 1}}>
+        }}
+      >
+        <View style={{ ...StyleSheet.absoluteFillObject, flex: 1 }}>
           <TouchableWithoutFeedback
-            style={{flex: 1}}
+            style={{ flex: 1 }}
             onPress={() => {
               Keyboard.dismiss();
             }}
-            pointerEvents="box-none">
-            <View style={{flex: 1}} />
+            pointerEvents="box-none"
+          >
+            <View style={{ flex: 1 }} />
           </TouchableWithoutFeedback>
         </View>
         <MainNavigator />
@@ -47,51 +49,53 @@ export default class EveApp extends Component {
 
 const MainScreenWithDrawer = DrawerNavigator(
   {
-    Main: {screen: screens.Main},
+    Main: { screen: screens.Main },
   },
   {
-    drawerPosition: 'right',
-    drawerOpenRoute: 'DrawerOpen',
-    drawerCloseRoute: 'DrawerClose',
-    drawerBackgroundColor: '#c7c7c7',
+    drawerPosition: "right",
+    drawerOpenRoute: "DrawerOpen",
+    drawerCloseRoute: "DrawerClose",
+    drawerBackgroundColor: "#c7c7c7",
     drawerWidth: width / 1.8,
     contentComponent: components.DrawerMenu,
     header: {
       visible: false,
     },
-  },
+  }
 );
 
 const MailViewScreenWithDrawer = DrawerNavigator(
   {
-    Main: {screen: screens.MailView},
+    Main: { screen: screens.MailView },
   },
   {
-    drawerPosition: 'right',
-    drawerOpenRoute: 'DrawerOpen',
-    drawerCloseRoute: 'DrawerClose',
-    drawerBackgroundColor: '#c7c7c7',
+    drawerPosition: "right",
+    drawerOpenRoute: "DrawerOpen",
+    drawerCloseRoute: "DrawerClose",
+    drawerBackgroundColor: "#c7c7c7",
     drawerWidth: width / 1.8,
     contentComponent: components.DrawerMenu,
     header: {
       visible: false,
     },
-  },
+  }
 );
 
 const MainNavigator = StackNavigator(
   {
-    Splash: {screen: screens.Splash},
-    Login: {screen: screens.Login},
-    Main: {screen: MainScreenWithDrawer},
-    CartbotView: {screen: screens.CartbotView},
-    MailView: {screen: MailViewScreenWithDrawer},
-    MailCompose: {screen: screens.MailCompose},
-    HistoryOfActions: {screen: screens.HistoryOfActions},
-    AttachFile: {screen: screens.AttachFile},
-    ToDoList: {screen: screens.ToDoList},
+    Splash: { screen: screens.Splash },
+    Login: { screen: screens.Login },
+    Main: { screen: MainScreenWithDrawer },
+    CartbotView: { screen: screens.CartbotView },
+    MailView: { screen: MailViewScreenWithDrawer },
+    MailCompose: { screen: screens.MailCompose },
+    HistoryOfActions: { screen: screens.HistoryOfActions },
+    AttachFile: { screen: screens.AttachFile },
+    ToDoList: { screen: screens.ToDoList },
+    Announcement: { screen: screens.Announcement },
+    CartbotAttachment: { screen: screens.CartbotAttachment },
   },
-  {headerMode: 'none'},
+  { headerMode: "none" }
 );
 
 const styles = StyleSheet.create({

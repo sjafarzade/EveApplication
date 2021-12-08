@@ -1,40 +1,40 @@
-import React, { Component } from 'react';
-import { Text, View, Dimensions, FlatList, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { observer } from 'mobx-react/native';
-import Toast, { DURATION } from 'react-native-easy-toast';
+import React, { PureComponent } from "react";
+import { Text, View, Dimensions, FlatList, StyleSheet } from "react-native";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import { observer } from "mobx-react/native";
+import Toast, { DURATION } from "react-native-easy-toast";
 
-import { CartbotRow, SearchBar, ListLoading, FooterLoading } from '@components';
-import Colors from '../constants/colors';
-import images from '@assets/images';
+import { CartbotRow, SearchBar, ListLoading, FooterLoading } from "@components";
+import Colors from "../constants/colors";
+import images from "@assets/images";
 import {
   getConfirmationQuery,
   confirmationAprrove,
   confirmationDeny,
   confirmationArchive,
   returnBackfromApprove,
-} from '../network/queries';
-import { CONFIRMATION_DEFAULT_FILTER, PAGE_SIZE } from '../constants/constants';
-import { userStore } from '../stores';
-import { DescriptionModal, EmptyComponent } from '@components';
+} from "../network/queries";
+import { CONFIRMATION_DEFAULT_FILTER, PAGE_SIZE } from "../constants/constants";
+import { userStore } from "../stores";
+import { DescriptionModal, EmptyComponent } from "@components";
 
 const keyExtractor = (item, index) => index;
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
-class Cartbot extends Component {
+class Cartbot extends PureComponent {
   state = {
-    searchText: '',
+    searchText: "",
     loadingMore: false,
     refreshing: false,
     selectedItem: null,
-    description: '',
-    type: '',
+    description: "",
+    type: "",
     modalLoading: false,
   };
 
   async onPull() {
     this.setState({ refreshing: true });
-    await getConfirmationQuery(0, '', true, CONFIRMATION_DEFAULT_FILTER);
+    await getConfirmationQuery(0, "", true, CONFIRMATION_DEFAULT_FILTER);
     this.setState({ refreshing: false });
   }
 
@@ -44,9 +44,9 @@ class Cartbot extends Component {
     if (userStore.confirmations.length % PAGE_SIZE == 0) {
       await getConfirmationQuery(
         Math.floor(userStore.confirmations.length / PAGE_SIZE),
-        '',
+        "",
         true,
-        CONFIRMATION_DEFAULT_FILTER,
+        CONFIRMATION_DEFAULT_FILTER
       );
     }
     this.setState({ loadingMore: false });
@@ -57,19 +57,12 @@ class Cartbot extends Component {
   }
 
   clearSearchBarText() {
-    this.setState({ searchText: '' });
+    this.setState({ searchText: "" });
   }
 
   async onAccept(confirmation) {
-    const {
-      description,
-      formId,
-      formName,
-      historyId,
-      recordId,
-      userId,
-      id,
-    } = confirmation;
+    const { description, formId, formName, historyId, recordId, userId, id } =
+      confirmation;
 
     const approveRes = await confirmationAprrove(
       description,
@@ -77,21 +70,21 @@ class Cartbot extends Component {
       formName,
       historyId,
       id,
-      userId,
+      userId
     );
     if (!approveRes) {
-      this.refs.errorToast.show('Approving Cartbot Failed', 2000);
+      this.refs.errorToast.show("Approving Cartbot Failed", 2000);
       return;
     }
     userStore.removeConfirmationFromStore(id);
-    this.refs.successToast.show('Successfully Approved', 2000);
+    this.refs.successToast.show("Successfully Approved", 2000);
   }
 
   async onDeny(confirmation) {
     this.setState({
       selectedItem: confirmation,
-      description: '',
-      type: 'Deny',
+      description: "",
+      type: "Deny",
     });
     this.showModal();
   }
@@ -99,21 +92,15 @@ class Cartbot extends Component {
   async onReturn(confirmation) {
     this.setState({
       selectedItem: confirmation,
-      description: '',
-      type: 'Return',
+      description: "",
+      type: "Return",
     });
     this.showModal();
   }
 
   async denyConfirmation() {
-    const {
-      formId,
-      formName,
-      historyId,
-      recordId,
-      userId,
-      id,
-    } = this.state.selectedItem;
+    const { formId, formName, historyId, recordId, userId, id } =
+      this.state.selectedItem;
     this.setState({ modalLoading: true });
     const denyRes = await confirmationDeny(
       this.state.description,
@@ -121,12 +108,12 @@ class Cartbot extends Component {
       formName,
       historyId,
       id,
-      userId,
+      userId
     );
 
     if (!denyRes) {
       this.setState({ modalLoading: false });
-      this.refs.errorToast.show('Denying Cartbot Failed', 2000);
+      this.refs.errorToast.show("Denying Cartbot Failed", 2000);
       this.dismissModal();
 
       return;
@@ -134,18 +121,12 @@ class Cartbot extends Component {
     this.setState({ modalLoading: false });
     userStore.removeConfirmationFromStore(id);
     this.dismissModal();
-    this.refs.successToast.show('Successfully Denied', 2000);
+    this.refs.successToast.show("Successfully Denied", 2000);
   }
 
   async returnConfirmation() {
-    const {
-      formId,
-      formName,
-      historyId,
-      recordId,
-      userId,
-      id,
-    } = this.state.selectedItem;
+    const { formId, formName, historyId, recordId, userId, id } =
+      this.state.selectedItem;
     this.setState({ modalLoading: true });
     const returnRes = await returnBackfromApprove(
       this.state.description,
@@ -153,13 +134,13 @@ class Cartbot extends Component {
       formName,
       historyId,
       id,
-      userId,
+      userId
     );
 
     if (!returnRes) {
       this.setState({ modalLoading: false });
 
-      this.refs.errorToast.show('Returning  Cartbot Failed', 2000);
+      this.refs.errorToast.show("Returning  Cartbot Failed", 2000);
       this.dismissModal();
       return;
     }
@@ -167,7 +148,7 @@ class Cartbot extends Component {
 
     userStore.removeConfirmationFromStore(id);
     this.dismissModal();
-    this.refs.successToast.show('Successfully Returned', 2000);
+    this.refs.successToast.show("Successfully Returned", 2000);
   }
 
   showModal() {
@@ -189,20 +170,21 @@ class Cartbot extends Component {
   render() {
     const { onPressConfirmation, loading } = this.props;
 
-    const { refreshing } = this.state;
+    console.warn(userStore.confirmations);
+    const { refreshing, searchText } = this.state;
     const confirmations = userStore.confirmations;
-    const sortedConfirmations = confirmations.sort(
-      (a, b) => (a.createdAt < b.createdAt ? 1 : -1),
+    const sortedConfirmations = confirmations.sort((a, b) =>
+      a.createdAt < b.createdAt ? 1 : -1
     );
-    const filteredMessages = !!this.state.searchText
+    const filteredMessages = !!searchText
       ? sortedConfirmations.filter(
-          item =>
+          (item) =>
             item.id
+              .toString()
               .toLowerCase()
-              .includes(this.state.searchText.toLowerCase()) ||
-            item.description
-              .toLowerCase()
-              .includes(this.state.searchText.toLowerCase()),
+              .includes(searchText.toLowerCase()) ||
+            (item.description &&
+              item.description.toLowerCase().includes(searchText.toLowerCase()))
         )
       : sortedConfirmations;
     return (
@@ -211,9 +193,9 @@ class Cartbot extends Component {
           isVisible={this.state.showModal}
           onBackPress={() => this.dismissModal()}
           onBackdropPress={() => this.dismissModal()}
-          onChangeDescription={text => this.onChangeDescription(text)}
+          onChangeDescription={(text) => this.onChangeDescription(text)}
           onSubmit={() => {
-            if (this.state.type == 'Deny') {
+            if (this.state.type == "Deny") {
               this.denyConfirmation();
             } else this.returnConfirmation();
           }}
@@ -221,7 +203,7 @@ class Cartbot extends Component {
           disabled={!this.state.description || this.state.modalLoading}
         />
         <SearchBar
-          onChangeText={text => this.changeSearchBarText(text)}
+          onChangeText={(text) => this.changeSearchBarText(text)}
           onClear={() => this.clearSearchBarText()}
           placeholder="Cartbot search"
           value={this.state.searchText}
@@ -229,23 +211,23 @@ class Cartbot extends Component {
         {loading ? (
           <ListLoading
             message="Loading Cartbot"
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: "white" }}
           />
         ) : (
           <FlatList
             data={filteredMessages}
-            renderItem={confirmation => (
+            renderItem={(confirmation) => (
               <CartbotRow
                 confirmation={confirmation.item}
                 onPressConfirmation={onPressConfirmation}
-                onAccept={confirmation => this.onAccept(confirmation)}
-                onDeny={confirmation => this.onDeny(confirmation)}
-                onReturn={confirmation => this.onReturn(confirmation)}
+                onAccept={(confirmation) => this.onAccept(confirmation)}
+                onDeny={(confirmation) => this.onDeny(confirmation)}
+                onReturn={(confirmation) => this.onReturn(confirmation)}
               />
             )}
             style={{ flex: 1 }}
             contentContainerStyle={[
-              { backgroundColor: 'white' },
+              { backgroundColor: "white" },
               filteredMessages.length == 0 && { flex: 1 },
             ]}
             onRefresh={() => this.onPull()}
@@ -260,10 +242,10 @@ class Cartbot extends Component {
               <EmptyComponent
                 title={
                   !!this.state.searchText
-                    ? 'No Item Found!'
+                    ? "No Item Found!"
                     : this.state.error
-                      ? 'No Internet Connection!'
-                      : 'No content exist!'
+                    ? "No Internet Connection!"
+                    : "No content exist!"
                 }
                 image={
                   this.state.error
@@ -286,7 +268,7 @@ class Cartbot extends Component {
           style={{
             backgroundColor: Colors.lightGreen,
             width: 200,
-            alignItems: 'center',
+            alignItems: "center",
           }}
           position="top"
           positionValue={32}

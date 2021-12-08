@@ -1,5 +1,8 @@
 {
   "name": "EveApplication",
-  "displayName": "EveApplication"
-  
+  "displayName": "EveApplication",
+  "packagerOpts": {
+    "config": "metro.config.js",
+    "sourceExts": ["js", "jsx", "svg", "ts", "tsx"]
+  }
 }

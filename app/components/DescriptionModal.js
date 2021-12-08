@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 import {
   TouchableOpacity,
   Image,
@@ -7,16 +7,16 @@ import {
   FlatList,
   Dimensions,
   TextInput,
-  Platform
-} from 'react-native';
-import Modal from 'react-native-modal';
-import KeyboardSpacer from 'react-native-keyboard-spacer';
+  Platform,
+} from "react-native";
+import Modal from "react-native-modal";
+import KeyboardSpacer from "react-native-keyboard-spacer";
 
-import Colors from '../constants/colors';
-import { ModalButton } from '@components';
+import Colors from "../constants/colors";
+import { ModalButton } from "@components";
+import colors from "../constants/colors";
 
-
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 const ConfirmationDenyMessageModal = ({
   onChangeText,
@@ -28,9 +28,9 @@ const ConfirmationDenyMessageModal = ({
     <View>
       <View
         style={{
-          backgroundColor: 'white',
-          justifyContent: 'center',
-          alignItems: 'center',
+          backgroundColor: "white",
+          justifyContent: "center",
+          alignItems: "center",
           padding: 16,
           borderRadius: 5,
         }}
@@ -38,25 +38,28 @@ const ConfirmationDenyMessageModal = ({
         <View style={{ width: width / 1.5 }}>
           <Text style={{ marginBottom: 12 }}>Description </Text>
         </View>
-        <View style={{
-          flexDirection:'row',
-          marginHorizontal: 32,
-          borderColor: Colors.lightGreyColor,
-          borderRadius: 4,
-          borderWidth: 1,
-          marginBottom: 12,
-          alignItems: 'center'
-        }}>
-            <TextInput
-              style={{
-                flex:1,
-                fontSize: 12,
-                paddingVertical: Platform.OS=='ios' ? 16 : 8,
-                paddingHorizontal: 8
-              }}
-              multiline={true}
-              onChangeText={text => onChangeText(text)}
-            />
+        <View
+          style={{
+            flexDirection: "row",
+            marginHorizontal: 32,
+            borderColor: Colors.lightGreyColor,
+            borderRadius: 4,
+            borderWidth: 1,
+            marginBottom: 12,
+            alignItems: "center",
+          }}
+        >
+          <TextInput
+            style={{
+              flex: 1,
+              fontSize: 12,
+              paddingVertical: Platform.OS == "ios" ? 16 : 8,
+              paddingHorizontal: 8,
+            }}
+            multiline={true}
+            onChangeText={(text) => onChangeText(text)}
+            underlineColorAndroid={colors.transparent}
+          />
         </View>
         <ModalButton
           onPress={onPressButton}
@@ -64,7 +67,7 @@ const ConfirmationDenyMessageModal = ({
           disabled={disabled}
         />
       </View>
-      {Platform.OS == 'ios' && <KeyboardSpacer/>}
+      {Platform.OS == "ios" && <KeyboardSpacer />}
     </View>
   );
 };
@@ -88,15 +91,15 @@ export default class DescriptionModal extends Component {
           onBackdropPress={onBackdropPress}
         >
           <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-          pointerEvents="box-none"
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            pointerEvents="box-none"
           >
             <ConfirmationDenyMessageModal
-              onChangeText={text => {
+              onChangeText={(text) => {
                 onChangeDescription(text);
               }}
               onPressButton={onSubmit}

@@ -1,11 +1,11 @@
-import { AsyncStorage } from 'react-native';
+import { AsyncStorage } from "react-native";
 
-import { stringToBase64 } from '../utils';
-import { DEFAULT_BASE_URL } from '../constants/constants';
-import { userStore } from '../stores';
+import { stringToBase64 } from "../utils";
+import { DEFAULT_BASE_URL } from "../constants/constants";
+import { userStore } from "../stores";
 
 async function getBaseUrl() {
-  const selected = await AsyncStorage.getItem('selectedCompany');
+  const selected = await AsyncStorage.getItem("selectedCompany");
   if (!!selected) {
     const { value } = await JSON.parse(selected);
     return value;
@@ -20,9 +20,9 @@ export async function loginUrl() {
 
 export async function correspondenceUrl(
   pageIndex = 0,
-  sortBy = 'EntDate',
+  sortBy = "EntDate",
   ascending = true,
-  filter,
+  filter
 ) {
   const baseUrl = await getBaseUrl();
   return `${baseUrl}/Ajax/autflwevents.aspx?command=GetRecords&pageIndex=${pageIndex}&SortBy=${sortBy}&ASC=${ascending}&Filters=${filter}&GridName=AutflwEvents`;
@@ -32,62 +32,62 @@ export async function newCorrespondenceUrl(
   { isSecure, message, subject, toList = [], ccList = [], reference, priority },
   randomId,
   letterNo,
-  number = null,
+  number = null
 ) {
   const baseUrl = await getBaseUrl();
-  let toString = '',
-    ccString = '';
-  const mainToUser = toList.find(item => !!item.id);
+  let toString = "",
+    ccString = "";
+  const mainToUser = toList.find((item) => !!item.id);
   if (!!mainToUser) {
-    toList = toList.filter(item => item.name !== mainToUser.name);
+    toList = toList.filter((item) => item.name !== mainToUser.name);
   }
   if (toList.length > 1) {
     for (let toItem of toList) {
-      toString = toString + toItem.name + ',';
+      toString = toString + toItem.name + ",";
     }
   }
   if (ccList.length > 0) {
     for (let ccItem of ccList) {
-      ccString = ccString + ccItem.name + ',';
+      ccString = ccString + ccItem.name + ",";
     }
   }
   if (!letterNo) {
-    letterNo = '';
+    letterNo = "";
   }
 
   if (!!number) {
     return `${baseUrl}/Ajax/autflwevents.aspx?Command=NewRecord&Data=comment:${stringToBase64(
-      subject,
+      subject
     )}|AFERichText:${stringToBase64(message)}|ToUid:${stringToBase64(
-      mainToUser.id,
+      mainToUser.id
     )}|Recivers:${stringToBase64(
-      toString.substring(0, toString.length - 1),
+      toString.substring(0, toString.length - 1)
     )}|IsSecure:${
-      isSecure ? stringToBase64('1') : stringToBase64('0')
+      isSecure ? stringToBase64("1") : stringToBase64("0")
     }|RecieverCopy:${stringToBase64(
-      ccString.substring(0, ccString.length - 1),
+      ccString.substring(0, ccString.length - 1)
     )}|AFEKid:${stringToBase64(reference)}|ALEid:${stringToBase64(
-      priority,
+      priority
     )}|FromUid:${stringToBase64(
-      '' + userStore.userInfo.userId,
+      "" + userStore.userInfo.userId
     )}|Letno:${stringToBase64(letterNo)}|AFEid:${stringToBase64(
-      '' + number,
+      "" + number
     )}&Details=&DetailsData=&UpdateMode=false&DuplicateMode=false&PreviousData=&FormName=autflwevents&PK_Value=${number}&ForeignKeys=&PK_Name=AFEid&RandomID=${randomId}`;
   } else {
     return `${baseUrl}/Ajax/autflwevents.aspx?Command=NewRecord&Data=comment:${stringToBase64(
-      subject,
+      subject
     )}|AFERichText:${stringToBase64(message)}|ToUid:${stringToBase64(
-      mainToUser.id,
+      mainToUser.id
     )}|Recivers:${stringToBase64(
-      toString.substring(0, toString.length - 1),
+      toString.substring(0, toString.length - 1)
     )}|IsSecure:${
-      isSecure ? stringToBase64('1') : stringToBase64('0')
+      isSecure ? stringToBase64("1") : stringToBase64("0")
     }|RecieverCopy:${stringToBase64(
-      ccString.substring(0, ccString.length - 1),
+      ccString.substring(0, ccString.length - 1)
     )}|AFEKid:${stringToBase64(reference)}|ALEid:${stringToBase64(
-      priority,
+      priority
     )}|Letno:${stringToBase64(
-      letterNo,
+      letterNo
     )}&Details=&DetailsData=&UpdateMode=false&DuplicateMode=false&PreviousData=&FormName=autflwevents&PK_Value=${number}&ForeignKeys=&PK_Name=AFEid&RandomID=${randomId}  `;
   }
 }
@@ -99,14 +99,14 @@ export async function correspondenceAttachmentUrl(id) {
 
 export async function confirmationAttachmentUrl(id) {
   const baseUrl = await getBaseUrl();
-  return `${baseUrl}/Ajax/GlobalHandler.aspx?Command=GetAttachments&GridName=flwhistory&PrimaryKey=${id}`;
+  return `${baseUrl}/Ajax/GlobalHandler.aspx?Command=GetAttachments&GridName=wrkorder&PrimaryKey=${id}`;
 }
 
 export async function confirmationUrl(
   pageIndex = 0,
-  sortBy = 'Enttime',
+  sortBy = "Enttime",
   ascending = false,
-  filter,
+  filter
 ) {
   const baseUrl = await getBaseUrl();
   return `${baseUrl}/Ajax/flwhistory.aspx?command=GetRecords&pageIndex=${pageIndex}&SortBy=${sortBy}&ASC=${ascending}&Filters=${filter}&GridName=flwhistory`;
@@ -120,13 +120,13 @@ export async function usernameUrl(personalID) {
 export async function correspondenceContentUrl(
   contentId,
   recordId,
-  changeSeen = false,
+  changeSeen = false
 ) {
   const baseUrl = await getBaseUrl();
   let url = `${baseUrl}/Ajax/GlobalHandler.aspx?Command=DownloadAttachment&Aftid=${contentId}&Ajax=true&FormName=autflwevents&RecordID=${recordId}`;
 
   if (!!changeSeen) {
-    url += '&ChangeSeeflag=true';
+    url += "&ChangeSeeflag=true";
   }
   return url;
 }
@@ -152,7 +152,7 @@ export async function confirmationAcceptUrl(
   formName,
   historyId,
   recordId,
-  userId,
+  userId
 ) {
   const baseUrl = await getBaseUrl();
   return `${baseUrl}/Ajax/GlobalHandler.aspx?Command=Confirm&FormID=${formId}&FormName=${formName}&RecordID=${recordId}&UserID=&HistoryID=${historyId}&Description=${description}`;
@@ -164,7 +164,7 @@ export async function confirmationDenyUrl(
   formName,
   historyId,
   recordId,
-  userId,
+  userId
 ) {
   const baseUrl = await getBaseUrl();
   return `${baseUrl}/Ajax/GlobalHandler.aspx?Command=Fail&FormID=${formId}&FormName=${formName}&RecordID=${recordId}&UserID=&HistoryID=${historyId}&Description=${description}`;
@@ -181,7 +181,7 @@ export async function historyOfActionsUrl(
   formName,
   historyId,
   recordId,
-  userId,
+  userId
 ) {
   const baseUrl = await getBaseUrl();
   return `${baseUrl}/Ajax/GlobalHandler.aspx?Command=GetConfirmationList&FormID=${formId}&FormName=${formName}&RecordID=${recordId}&UserID=&HistoryID=${historyId}&Description=${description}`;
@@ -193,7 +193,7 @@ export async function returnBackUrl(
   formName,
   historyId,
   recordId,
-  userId,
+  userId
 ) {
   const baseUrl = await getBaseUrl();
   return `${baseUrl}/Ajax/GlobalHandler.aspx?Command=ReturnBack&FormID=${formId}&FormName=${formName}&RecordID=${recordId}&UserID=&HistoryID=${historyId}&Description=${description}`;
@@ -227,8 +227,8 @@ export async function userPictureUrl(personalId, pictureId) {
 export async function folderCorrespondencesFilterUrl(
   folderId,
   pageIndex = 0,
-  sortBy = 'EntDate',
-  ascending = true,
+  sortBy = "EntDate",
+  ascending = true
 ) {
   const baseUrl = await getBaseUrl();
   return `${baseUrl}/Ajax/AutFlwEvents.aspx?command=GetRecords&PageIndex=${pageIndex}&SortBy=${sortBy}&ASC=${ascending}&Filters=FilterID:${folderId}&GridName=autflwevents`;
@@ -261,4 +261,14 @@ export async function removeAttachmentUrl(attachmentId) {
 export async function masterDetailesUrl(formId, id) {
   const baseUrl = await getBaseUrl();
   return `${baseUrl}/Ajax/Mobile_API.aspx?Command=MasterDetailData&Eid=${formId}&ID=${id}`;
+}
+
+export async function announcementsActionsUrl(formId, id) {
+  const baseUrl = await getBaseUrl();
+  return `${baseUrl}/Ajax/Mobile_API.aspx?Command=GetNotice&Eid=${formId}&ID=${id}`;
+}
+
+export async function submitAnnouncementUrl(comment, formId, id) {
+  const baseUrl = await getBaseUrl();
+  return `${baseUrl}/Ajax/Mobile_API.aspx?Command=InsertNotice&Eid=${formId}&ID=${id}&Comment=${comment}`;
 }

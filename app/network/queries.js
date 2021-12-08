@@ -1,9 +1,9 @@
-import Cookie from 'react-native-cookie';
-import RNFetchBlob from 'rn-fetch-blob';
-import * as mime from 'react-native-mime-types';
-import {Platform} from 'react-native';
+import Cookie from "react-native-cookie";
+import RNFetchBlob from "rn-fetch-blob";
+import * as mime from "react-native-mime-types";
+import { Platform } from "react-native";
 
-import {stringToBase64, extractMasterDetails} from '../utils';
+import { stringToBase64, extractMasterDetails } from "../utils";
 import {
   loginUrl,
   correspondenceUrl,
@@ -32,7 +32,9 @@ import {
   uploadAttachmentUrl,
   removeAttachmentUrl,
   masterDetailesUrl,
-} from './urls';
+  announcementsActionsUrl,
+  submitAnnouncementUrl,
+} from "./urls";
 
 import {
   SERVER_COOKIE_KEY,
@@ -40,8 +42,8 @@ import {
   FOLDER_OTHER_TYPE,
   CORRESPONDENCE_DEFAULT_FILTER,
   PAGE_SIZE,
-} from '../constants/constants';
-import {userStore} from '../stores';
+} from "../constants/constants";
+import { userStore } from "../stores";
 import {
   correspondenceDataInterface,
   correspondenceAttachmentInterface,
@@ -53,21 +55,23 @@ import {
   referenceLookupInterface,
   userInfoInterface,
   folderInterface,
-} from './interface';
+  announcementInterface,
+  confirmationAttachmentInterface,
+} from "./interface";
 
 export async function loginQuery(username, password) {
   await Cookie.clear();
   const url = await loginUrl();
 
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
       Authorization: `Basic ${stringToBase64(`${username}:${password}`)}`,
-      'Access-Control-Allow-Headers': '*',
+      "Access-Control-Allow-Headers": "*",
       auth: `Basic ${stringToBase64(`${username}:${password}`)}`,
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let loginRes;
   try {
@@ -88,17 +92,17 @@ export async function loginQuery(username, password) {
 
 export async function getCorrespondenceQuery(
   pageIndex = 0,
-  sortBy = '',
+  sortBy = "",
   ascending = true,
-  filter = CORRESPONDENCE_DEFAULT_FILTER,
+  filter = CORRESPONDENCE_DEFAULT_FILTER
 ) {
   const url = await correspondenceUrl(pageIndex, sortBy, ascending, filter);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -108,8 +112,8 @@ export async function getCorrespondenceQuery(
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const correspondences = jsonResponse.Items.map(item =>
-      correspondenceDataInterface(item),
+    const correspondences = jsonResponse.Items.map((item) =>
+      correspondenceDataInterface(item)
     );
     if (pageIndex == 0) {
       userStore.setCorrespondences(correspondences);
@@ -121,7 +125,7 @@ export async function getCorrespondenceQuery(
         await getCorrespondenceAttachmentsQuery(correspondence.number);
         await getCorrespondenceContentQuery(
           correspondence.contentId,
-          correspondence.number,
+          correspondence.number
         );
       } catch (error) {}
     }
@@ -135,18 +139,18 @@ export async function getCorrespondenceQuery(
 export async function getCorrespondenceAttachmentsQuery(correspondenceId) {
   const url = await correspondenceAttachmentUrl(correspondenceId);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
 
   const response = await fetch(url, options);
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const attachments = jsonResponse.Attachments.map(attach =>
-      correspondenceAttachmentInterface(attach),
+    const attachments = jsonResponse.Attachments.map((attach) =>
+      correspondenceAttachmentInterface(attach)
     );
     userStore.setCorrespondenceAttachments(correspondenceId, attachments);
     return true;
@@ -157,15 +161,15 @@ export async function getCorrespondenceAttachmentsQuery(correspondenceId) {
 
 export async function changeCorrespondenceSeenQuery(
   contentId,
-  correspondenceId,
+  correspondenceId
 ) {
   const url = await correspondenceContentUrl(contentId, correspondenceId, true);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   try {
     await fetch(url, options);
@@ -174,19 +178,19 @@ export async function changeCorrespondenceSeenQuery(
 
 export async function getCorrespondenceContentQuery(
   contentId,
-  correspondenceId,
+  correspondenceId
 ) {
   const url = await correspondenceContentUrl(
     contentId,
     correspondenceId,
-    false,
+    false
   );
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   const response = await fetch(url, options);
   if (response && response.ok) {
@@ -203,15 +207,15 @@ export async function getConfirmationQuery(
   pageIndex,
   sortBy,
   ascending,
-  filter,
+  filter
 ) {
   const url = await confirmationUrl(pageIndex, sortBy, ascending, filter);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -221,8 +225,8 @@ export async function getConfirmationQuery(
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const confirmations = jsonResponse.Items.map(item =>
-      confirmationDataInterface(item),
+    const confirmations = jsonResponse.Items.map((item) =>
+      confirmationDataInterface(item)
     );
 
     if (pageIndex == 0) {
@@ -232,8 +236,11 @@ export async function getConfirmationQuery(
     }
     for (let confirmation of confirmations) {
       try {
-        await getCorrespondenceAttachmentsQuery(confirmation.id);
-      } catch (error) {}
+        console.warn("here");
+        await getConfirmationAttachmentsQuery(confirmation.id);
+      } catch (error) {
+        console.warn("error", error);
+      }
     }
     userStore.toggleReload();
     return true;
@@ -245,18 +252,19 @@ export async function getConfirmationQuery(
 export async function getConfirmationAttachmentsQuery(confirmationId) {
   const url = await confirmationAttachmentUrl(confirmationId);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
 
   const response = await fetch(url, options);
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const attachments = jsonResponse.Attachments.map(attach =>
-      correspondenceAttachmentInterface(attach),
+    console.warn("attach", jsonResponse);
+    const attachments = jsonResponse.Attachments.map((attach) =>
+      confirmationAttachmentInterface(attach)
     );
     userStore.setConfirmationAttachments(confirmationId, attachments);
     return true;
@@ -268,33 +276,33 @@ export async function getConfirmationAttachmentsQuery(confirmationId) {
 export async function getUsernameQuery(personalID) {
   const url = await usernameUrl(personalID);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
     response = await fetch(url, options);
   } catch (error) {
-    return {status: false};
+    return { status: false };
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    return {status: true, username: jsonResponse.UserName};
+    return { status: true, username: jsonResponse.UserName };
   }
-  return {status: false};
+  return { status: false };
 }
 
 export async function getPersonsLookupQuery(pageIndex = 0) {
   const url = await personLookupUrl(pageIndex);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -304,8 +312,8 @@ export async function getPersonsLookupQuery(pageIndex = 0) {
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const persons = jsonResponse.Items.map(item =>
-      personsLookupInterface(item),
+    const persons = jsonResponse.Items.map((item) =>
+      personsLookupInterface(item)
     );
     if (pageIndex == 0) {
       userStore.setPersons(persons);
@@ -320,11 +328,11 @@ export async function getPersonsLookupQuery(pageIndex = 0) {
 export async function getPriorityLookupQuery() {
   const url = await priorityLookupUrl();
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -334,8 +342,8 @@ export async function getPriorityLookupQuery() {
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const priorities = jsonResponse.Items.map(item =>
-      priorityLookupInterface(item),
+    const priorities = jsonResponse.Items.map((item) =>
+      priorityLookupInterface(item)
     );
     userStore.setPriorities(priorities);
     return true;
@@ -346,11 +354,11 @@ export async function getPriorityLookupQuery() {
 export async function getReferenceTypeLookupQuery() {
   const url = await referenceTypeLookupUrl();
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -360,30 +368,30 @@ export async function getReferenceTypeLookupQuery() {
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const references = jsonResponse.Items.map(item =>
-      referenceLookupInterface(item),
+    const references = jsonResponse.Items.map((item) =>
+      referenceLookupInterface(item)
     );
     userStore.setReferenceTypes(references);
-    return {status: true, data: userStore.referenceTypes};
+    return { status: true, data: userStore.referenceTypes };
   }
-  return {status: false};
+  return { status: false };
 }
 
-const messageBodyWrapper = message =>
+const messageBodyWrapper = (message) =>
   `<div dir='rtl' style='direction: rtl;unicode-bidi: embed;'>فرستنده: [[Sender]] ,  گیرنده: [[Receiver]] ,  موضوع: [[Subject]] , گیرندگان رونوشت:[[RecieverCopy]] , [[Now]]</div>###<p>${message}</p>`;
 
 export async function createNewFolder(foldername) {
-  const {userId} = userStore.userInfo;
+  const { userId } = userStore.userInfo;
   const url = await createFolderUrl(
     stringToBase64(foldername),
-    stringToBase64(userStore.userInfo.userId),
+    stringToBase64(userStore.userInfo.userId)
   );
   let options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -393,7 +401,7 @@ export async function createNewFolder(foldername) {
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const {PrimaryKeyValue} = jsonResponse;
+    const { PrimaryKeyValue } = jsonResponse;
     const confirmUrl = await confirmFolderUrl(PrimaryKeyValue);
     let confirmResponse;
     try {
@@ -402,7 +410,7 @@ export async function createNewFolder(foldername) {
       return false;
     }
     if (confirmResponse && confirmResponse.ok) {
-      userStore.addFolder({name: foldername, type: FOLDER_OTHER_TYPE});
+      userStore.addFolder({ name: foldername, type: FOLDER_OTHER_TYPE });
       getFoldersQuery();
       let jsonConfirmResponse;
       try {
@@ -421,11 +429,11 @@ export async function createNewFolder(foldername) {
 export async function userInfoQuery() {
   const url = await userInfoUrl();
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -445,7 +453,7 @@ export async function postNewCorrespondence(
   correspondence,
   randomId,
   letterNo,
-  number,
+  number
 ) {
   let url;
   try {
@@ -456,15 +464,15 @@ export async function postNewCorrespondence(
       },
       randomId,
       letterNo,
-      number,
+      number
     );
   } catch (e) {}
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
 
@@ -474,7 +482,6 @@ export async function postNewCorrespondence(
     return false;
   }
   if (response && response.ok) {
-    const jsonResponse = await response.json();
     return true;
   }
   return false;
@@ -486,7 +493,7 @@ export async function confirmationAprrove(
   formName,
   historyId,
   recordId,
-  userId,
+  userId
 ) {
   const url = await confirmationAcceptUrl(
     description,
@@ -494,14 +501,14 @@ export async function confirmationAprrove(
     formName,
     historyId,
     recordId,
-    userId,
+    userId
   );
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -510,7 +517,6 @@ export async function confirmationAprrove(
     return false;
   }
   if (response && response.ok) {
-    const jsonResponse = await response.json();
     return true;
   }
 }
@@ -521,7 +527,7 @@ export async function confirmationDeny(
   formName,
   historyId,
   recordId,
-  userId,
+  userId
 ) {
   const encodedDescription = stringToBase64(description);
   const url = await confirmationDenyUrl(
@@ -530,23 +536,23 @@ export async function confirmationDeny(
     formName,
     historyId,
     recordId,
-    userId,
+    userId
   );
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
     response = await fetch(url, options);
   } catch (error) {
+    console.log(error);
     return false;
   }
   if (response && response.ok) {
-    const jsonResponse = await response.json();
     return true;
   }
 }
@@ -554,11 +560,11 @@ export async function confirmationDeny(
 export async function confirmationArchive(historyId) {
   const url = await confirmationArchiveUrl(historyId);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -567,7 +573,6 @@ export async function confirmationArchive(historyId) {
     return false;
   }
   if (response && response.ok) {
-    const jsonResponse = await response.json();
     return true;
   }
 }
@@ -578,7 +583,7 @@ export async function historyOfActions(
   formName,
   historyId,
   recordId,
-  userId,
+  userId
 ) {
   const url = await historyOfActionsUrl(
     description,
@@ -586,20 +591,20 @@ export async function historyOfActions(
     formName,
     historyId,
     recordId,
-    userId,
+    userId
   );
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   const response = await fetch(url, options);
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const history = jsonResponse.Items.map(item =>
-      historyOfActionsDataInterface(item),
+    const history = jsonResponse.Items.map((item) =>
+      historyOfActionsDataInterface(item)
     );
     return history;
   }
@@ -611,7 +616,7 @@ export async function returnBackfromApprove(
   formName,
   historyId,
   recordId,
-  userId,
+  userId
 ) {
   const encodedDescription = stringToBase64(description);
   const url = await returnBackUrl(
@@ -620,14 +625,14 @@ export async function returnBackfromApprove(
     formName,
     historyId,
     recordId,
-    userId,
+    userId
   );
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -636,7 +641,6 @@ export async function returnBackfromApprove(
     return false;
   }
   if (response && response.ok) {
-    const jsonResponse = await response.json();
     return true;
   }
 }
@@ -647,10 +651,10 @@ export async function getUserpictureQuery() {
   }
   const url = await userPictureUrl(
     userStore.userInfo.personalId,
-    userStore.userInfo.pictureId,
+    userStore.userInfo.pictureId
   );
-  RNFetchBlob.fetch('GET', url, {})
-    .then(res => {
+  RNFetchBlob.fetch("GET", url, {})
+    .then((res) => {
       let base64Str = res.base64();
       if (base64Str !== FAILED_BASE64) {
         userStore.setUserPicture(base64Str);
@@ -662,11 +666,11 @@ export async function getUserpictureQuery() {
 export async function getFoldersQuery() {
   const url = await getFoldersUrl();
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -676,7 +680,7 @@ export async function getFoldersQuery() {
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const folders = jsonResponse.Items.map(item => folderInterface(item));
+    const folders = jsonResponse.Items.map((item) => folderInterface(item));
     userStore.setFolders(folders);
     return true;
   }
@@ -686,20 +690,20 @@ export async function getFolderCorrespondencesQuery(
   folderId,
   pageIndex = 0,
   sortBy,
-  ascending,
+  ascending
 ) {
   const url = await folderCorrespondencesFilterUrl(
     stringToBase64(folderId),
     pageIndex,
     sortBy,
-    ascending,
+    ascending
   );
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   let response;
   try {
@@ -709,8 +713,8 @@ export async function getFolderCorrespondencesQuery(
   }
   if (response && response.ok) {
     const jsonResponse = await response.json();
-    const correspondences = jsonResponse.Items.map(item =>
-      correspondenceDataInterface(item),
+    const correspondences = jsonResponse.Items.map((item) =>
+      correspondenceDataInterface(item)
     );
     if (pageIndex == 0) {
       userStore.setCorrespondences(correspondences);
@@ -722,7 +726,7 @@ export async function getFolderCorrespondencesQuery(
         await getCorrespondenceAttachmentsQuery(correspondence.number);
         await getCorrespondenceContentQuery(
           correspondence.contentId,
-          correspondence.number,
+          correspondence.number
         );
       } catch (error) {
         return false;
@@ -737,11 +741,11 @@ export async function getFolderCorrespondencesQuery(
 export async function moveCorrespondenceQuery(correspondenceId, folderId) {
   const url = await moveCorrespondenceUrl(correspondenceId, folderId);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   const response = await fetch(url, options);
 
@@ -761,12 +765,12 @@ export async function downloadAttachmentQuery(
   onDownloadEnd,
   onDownloadCancel,
   setProgress,
-  setTask,
+  setTask
 ) {
   const url = await downloadAttachmentUrl(attachmentId);
-  const {fs} = RNFetchBlob;
+  const { fs } = RNFetchBlob;
   const baseDir =
-    Platform.OS == 'ios' ? fs.dirs.DocumentDir : fs.dirs.DownloadDir;
+    Platform.OS == "ios" ? fs.dirs.DocumentDir : fs.dirs.DownloadDir;
   let eveDir = baseDir;
   try {
     const mkdirRes = await fs.mkdir(`${baseDir}/eveApplication`);
@@ -774,7 +778,7 @@ export async function downloadAttachmentQuery(
       eveDir = `${baseDir}/eveApplication`;
     }
   } catch (err) {
-    if (err.code == 'EEXIST') {
+    if (err.code == "EEXIST") {
       eveDir = `${baseDir}/eveApplication`;
     }
   }
@@ -782,20 +786,19 @@ export async function downloadAttachmentQuery(
   const downloadTask = RNFetchBlob.config({
     fileCache: false,
     path: `${eveDir}/${fileName}`,
-  }).fetch('POST', url, {
+  }).fetch("POST", url, {
     Cookie: `.ASPXAUTH=${userStore.cookie};`,
-    'Cache-Control': 'private',
+    "Cache-Control": "private",
   });
   setTask(downloadTask);
   downloadTask
-    .progress({interval: 250}, (received, total) => {
-      console.log('progress', received / total);
-      setProgress(received / total * 100);
+    .progress({ interval: 250 }, (received, total) => {
+      setProgress((received / total) * 100);
     })
-    .then(res => {
+    .then((res) => {
       onDownloadEnd();
     })
-    .catch(err => {
+    .catch((err) => {
       onDownloadCancel();
     });
 }
@@ -809,43 +812,42 @@ export async function uploadAttachmentQuery(
   setProgress,
   setTask,
   randomId,
-  number,
+  number
 ) {
   const url = await uploadAttachmentUrl(randomId, number);
-  if (Platform.OS == 'ios') {
-    fileAddress = fileAddress.replace('file://', '');
+  if (Platform.OS == "ios") {
+    fileAddress = fileAddress.replace("file://", "");
   }
   const uploadTask = RNFetchBlob.fetch(
-    'POST',
+    "POST",
     url,
     {
       Cookie: `.ASPXAUTH=${userStore.cookie};`,
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
     [
       {
         filename: fileName,
-        'Content-Type': mime.lookup(fileName),
+        "Content-Type": mime.lookup(fileName),
         type: mime.lookup(fileName),
-        'Content-Disposition': 'form-data',
-        name: 'file',
+        "Content-Disposition": "form-data",
+        name: "file",
         data:
-          Platform.OS == 'ios'
-            ? 'RNFetchBlob-' + decodeURI(fileAddress)
+          Platform.OS == "ios"
+            ? "RNFetchBlob-" + decodeURI(fileAddress)
             : RNFetchBlob.wrap(fileAddress),
       },
-    ],
+    ]
   );
   setTask(uploadTask);
   uploadTask
-    .uploadProgress({interval: 250}, (written, total) => {
-      console.log('progress', written / total);
+    .uploadProgress({ interval: 250 }, (written, total) => {
       setProgress(written / total);
     })
-    .then(res => {
+    .then((res) => {
       onUploadEnd(JSON.parse(res.text()));
     })
-    .catch(err => {
+    .catch((err) => {
       onUploadCancel();
     });
 }
@@ -853,11 +855,11 @@ export async function uploadAttachmentQuery(
 export async function removeAttachmentQuery(attachmentId) {
   const url = await removeAttachmentUrl(attachmentId);
   var options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'Cache-Control': 'private',
+      "Cache-Control": "private",
     },
-    credentials: 'same-origin',
+    credentials: "same-origin",
   };
   const response = await fetch(url, options);
   if (response && response.ok) {
@@ -873,12 +875,12 @@ export async function removeAttachmentQuery(attachmentId) {
 export async function masterDetailesQuery(formId, id) {
   const url = await masterDetailesUrl(formId, id);
   var options = {
-    method: 'GET',
-    headers: {'Catch-Control': 'private'},
-    credentials: 'same-origin',
+    method: "GET",
+    headers: { "Catch-Control": "private" },
+    credentials: "same-origin",
   };
   try {
-    const res = await RNFetchBlob.fetch('GET', url, {});
+    const res = await RNFetchBlob.fetch("GET", url, {});
     const status = res.info().status;
 
     if (status == 200) {
@@ -886,8 +888,50 @@ export async function masterDetailesQuery(formId, id) {
       const masterRes = extractMasterDetails(text);
       return masterRes;
     }
-    return {};
+    return [];
   } catch (e) {
-    return {};
+    return [];
+  }
+}
+
+export async function announcementQuery(formId, id) {
+  try {
+    const url = await announcementsActionsUrl(formId, id);
+    var options = {
+      method: "GET",
+      headers: {
+        "Cache-Control": "private",
+        "Content-Type": "application/json",
+      },
+      credentials: "same-origin",
+    };
+    const response = await fetch(url, options);
+
+    if (response && response.ok) {
+      const jsonResponse = await response.json();
+      return jsonResponse.noticeData.map((item) => announcementInterface(item));
+    }
+  } catch (err) {
+    return [];
+  }
+}
+
+export async function submitAnnouncementQuery(comment, formId, id) {
+  const url = await submitAnnouncementUrl(comment, formId, id);
+  var options = {
+    method: "GET",
+    headers: {
+      "Cache-Control": "private",
+    },
+    credentials: "same-origin",
+  };
+  let response;
+  try {
+    response = await fetch(url, options);
+  } catch (error) {
+    return false;
+  }
+  if (response && response.ok) {
+    return true;
   }
 }

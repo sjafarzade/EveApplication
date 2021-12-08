@@ -2,12 +2,11 @@
 
 buildscript {
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        // classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:4.1.1'  //Minimum supported Gradle version is 4.6
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -18,7 +17,7 @@ subprojects {
     afterEvaluate {project ->
         if (project.hasProperty("android")) {
             android {
-                compileSdkVersion 27
+                compileSdkVersion 28
                 buildToolsVersion "27.0.2"
             }
         }
@@ -28,14 +27,15 @@ subprojects {
 
 allprojects {
     repositories {
+        google()
+        maven { url 'https://jitpack.io' }
+
         mavenLocal()
         jcenter()
         maven {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
-        maven { url "https://jitpack.io" }
-        google()
     }
 }
 
@@ -58,21 +58,21 @@ subprojects {
     }
 }
 
-subprojects {
-  project.configurations.all {
-      afterEvaluate {project ->
-        if (project.hasProperty("android")) {
-            android {
-                compileSdkVersion 27
-                buildToolsVersion '27.0.2'
-            }
-        }
-    }
-     resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == 'com.android.support'
-              && !details.requested.name.contains('multidex') ) {
-           details.useVersion "27.0.2"
-        }
-     }
-  }
-}
+//subprojects {
+//  project.configurations.all {
+//      afterEvaluate {project ->
+//        if (project.hasProperty("android")) {
+//            android {
+//                compileSdkVersion 27
+//                buildToolsVersion '27.0.2'
+//            }
+//        }
+//    }
+//     resolutionStrategy.eachDependency { details ->
+//        if (details.requested.group == 'com.android.support'
+//              && !details.requested.name.contains('multidex') ) {
+//           details.useVersion "27.0.2"
+//        }
+//     }
+//  }
+//}

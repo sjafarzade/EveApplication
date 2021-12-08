@@ -3,12 +3,11 @@ package com.eveapplication;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import im.shimo.react.cookie.CookieManagerPackage;
 import com.reactnativedocumentpicker.ReactNativeDocumentPicker;
-import com.horcrux.svg.SvgPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.github.yamill.orientation.OrientationPackage;
-import im.shimo.react.cookie.CookieManagerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -29,12 +28,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new CookieManagerPackage(),
             new ReactNativeDocumentPicker(),
-            new SvgPackage(),
             new RNFetchBlobPackage(),
             new VectorIconsPackage(),
-            new OrientationPackage(),
-            new CookieManagerPackage()
+            new OrientationPackage()
       );
     }
 
