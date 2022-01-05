@@ -17,7 +17,7 @@ import { DotsLoader } from "react-native-indicator";
 import splitEvery from "split-every";
 import * as R from "ramda";
 import Toast, { DURATION } from "react-native-easy-toast";
-import { observer } from "mobx-react/native";
+import { observer } from "mobx-react";
 
 import { Switch } from "react-native-switch";
 import { NavigationActions } from "react-navigation";

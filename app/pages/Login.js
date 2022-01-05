@@ -13,7 +13,7 @@ import {
   AsyncStorage,
 } from 'react-native';
 import { NavigationActions, StackActions } from 'react-navigation';
-import { observer } from 'mobx-react/native';
+import { observer } from 'mobx-react';
 import { DotsLoader } from 'react-native-indicator';
 import Toast, { DURATION } from 'react-native-easy-toast';
 import KeyboardSpacer from 'react-native-keyboard-spacer';
@@ -441,7 +441,7 @@ const CompanySettingForm = observer(
         </View>
       );
     }
-  },
+  }
 );
 
 const companySettingFormStyles = StyleSheet.create({

@@ -17,7 +17,7 @@ import {
   DocumentPickerUtil,
 } from "react-native-document-picker";
 import { Bar } from "react-native-progress";
-import RNFetchBlob from "rn-fetch-blob";
+// import RNFetchBlob from "rn-fetch-blob";
 import * as mime from "react-native-mime-types";
 import * as R from "ramda";
 

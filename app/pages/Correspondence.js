@@ -8,7 +8,7 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
-import { observer } from 'mobx-react/native';
+import { observer } from 'mobx-react';
 import Modal from 'react-native-modal';
 import Toast, { DURATION } from 'react-native-easy-toast';
 

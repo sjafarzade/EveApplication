@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { userStore } from '../stores';
-import { observer } from 'mobx-react/native';
+import { observer } from 'mobx-react';
 import Modal from 'react-native-modal';
 import { DotsLoader } from 'react-native-indicator';
 import {

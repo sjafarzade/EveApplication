@@ -12,7 +12,7 @@ import {
   TextInput,
   AsyncStorage,
 } from "react-native";
-import { observer } from "mobx-react/native";
+import { observer } from "mobx-react";
 import { TabView, TabBar, SceneMap } from "react-native-tab-view";
 import { DrawerActions } from "react-navigation";
 import Toast, { DURATION } from "react-native-easy-toast";
@@ -205,7 +205,7 @@ class Main extends Component {
 
   onPressConfirmation(confirmation) {
     this.props.navigation.navigate("CartbotView", {
-      confirmation,
+      confirmation
     });
   }
 

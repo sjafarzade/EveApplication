@@ -1,7 +1,7 @@
 import React, { PureComponent } from "react";
 import { Text, View, Dimensions, FlatList, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { observer } from "mobx-react/native";
+import { observer } from "mobx-react";
 import Toast, { DURATION } from "react-native-easy-toast";
 
 import { CartbotRow, SearchBar, ListLoading, FooterLoading } from "@components";

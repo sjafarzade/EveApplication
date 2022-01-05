@@ -1,8 +1,11 @@
 {
-  "name": "EveApplication",
-  "displayName": "EveApplication",
-  "packagerOpts": {
-    "config": "metro.config.js",
-    "sourceExts": ["js", "jsx", "svg", "ts", "tsx"]
-  }
+  "expo": {
+    "name": "EveErp",
+    "slug": "EveErp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "EveErp"
 }

@@ -60,7 +60,7 @@ import {
 } from "./interface";
 
 export async function loginQuery(username, password) {
-  await Cookie.clear();
+  Cookie.clear();
   const url = await loginUrl();
 
   var options = {
